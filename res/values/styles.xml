@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="OverlayDialog" parent="@android:style/Theme.Dialog">
+
+    <style name="AppTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
@@ -8,4 +9,5 @@
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
 </resources>
