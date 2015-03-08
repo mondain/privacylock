@@ -1,21 +1,22 @@
 package org.gregoire;
 
-import org.gregoire.compat.Config;
-import org.gregoire.compat.DefaultConfig;
-import org.gregoire.compat.ICSConfig;
-import org.gregoire.compat.JellyBeanConfig;
-
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -31,23 +32,68 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// set up our lockscreen - A simple method that sets the screen to fullscreen. It removes the Notifications bar, the Actionbar and the virtual keys (if they are on the phone)
-		this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		Config config = null;
-		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) { // < 14
-			config = new ICSConfig();
-		} else if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) { // < 19
-			config = new JellyBeanConfig();
-		} else {
-			config = new DefaultConfig();
-		}
-		config.doConfig(this);
+		// start our service
 		startService(new Intent(this, LockScreenService.class));
+		// set up our lockscreen - A simple method that sets the screen to fullscreen. It removes the Notifications bar, the Actionbar and the virtual keys (if they are on the phone)
+		//getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
+		//this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		final int flags = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+		final int type =  WindowManager.LayoutParams.TYPE_SYSTEM_ALERT | WindowManager.LayoutParams.TYPE_KEYGUARD;
+		Log.v(TAG, "Flags: " + flags);
+		final WindowManager.LayoutParams params = new WindowManager.LayoutParams(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN, type, flags, PixelFormat.TRANSLUCENT);
+		getWindow().setAttributes(params);
+		WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		ViewGroup topView = (ViewGroup) getLayoutInflater().inflate(R.layout.activity_main, null);
+		// set visibility mod
+		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) { // < 14
+			setUiVisibilityICS(topView);
+		} else if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) { // < 19
+			setUiVisibilityJB(topView);
+		} else {
+			setUiVisibility(topView);			
+		}
+		// get the button
+		Button unlock = (Button) topView.findViewById(R.id.unlockBtn);
+		unlock.setOnTouchListener(new OnTouchListener() {
 
-		setContentView(R.layout.activity_main);
+			@Override
+            public boolean onTouch(View view, MotionEvent event) {
+	            unlockScreen(view);
+	            return true;
+            }
+			
+		});
+		// set the view
+		wm.addView(topView, params);
+		
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		adminReceiverName = new ComponentName(this, AdminReceiver.class);
+	}
+	
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	private void setUiVisibility(ViewGroup topView) {
+		Log.v(TAG, "Default >= KitKat");
+		topView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_IMMERSIVE);	
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+	private void setUiVisibilityJB(ViewGroup topView) {
+		Log.v(TAG, "JellyBean");
+		topView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+	            | View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_LOW_PROFILE);		
+	}
+
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	private void setUiVisibilityICS(ViewGroup topView) {
+		Log.v(TAG, "IceCreamSandwich");
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 	}
 
 	//	@Override
@@ -75,16 +121,16 @@ public class MainActivity extends Activity {
 	//				break;
 	//		}
 	//	}	
- 	
- 	@Override
-    protected void onNewIntent(Intent intent) {
-		Log.v(TAG, "onNewIntent " + intent.getAction());
-        super.onNewIntent(intent);
-        if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-            Log.v(TAG, "onNewIntent: HOME Key");
 
-        }
-    }
+	@Override
+	protected void onNewIntent(Intent intent) {
+		Log.v(TAG, "onNewIntent " + intent.getAction());
+		super.onNewIntent(intent);
+		if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+			Log.v(TAG, "onNewIntent: HOME Key");
+
+		}
+	}
 
 	@Override
 	public void onAttachedToWindow() {
@@ -102,16 +148,6 @@ public class MainActivity extends Activity {
 				Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
 			}
 		}
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		Log.v(TAG, "onKeyDown " + event);
-		if (keyCode == KeyEvent.KEYCODE_HOME) {
-			Log.v(TAG, "HOME");
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override

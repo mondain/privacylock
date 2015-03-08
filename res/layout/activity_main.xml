@@ -9,7 +9,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:onClick="unlockScreen"
+        android:id="@+id/unlockBtn"
         android:text="UNLOCK"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
