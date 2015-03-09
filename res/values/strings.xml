@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PrivacyLock</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name_conf">PrivacyLock Configuration</string>
     <string name="unlock">UNLOCK</string>
     <string name="codeAccepted">Code Accepted</string>
     <string name="codeAcceptedNotification">Code Accepted</string>
+    <string name="conf">Configuration</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="quit">Quit</string>
+    
+    <string name="opt_unlock">Unlock Device</string>
+    
+    <string name="opt_clear_call_log">Clear Call Logs</string>
+    <string name="opt_clear_sms">Clear SMS Messages</string>
+    <string name="opt_clear_camera_roll">Clear Camera Roll</string>
+    
+    <string name="opt_send_emergency_sms">Send Emergency SMS</string>
+        
+    <string name="opt_wipe">Wipe Device</string>
+    
     <string name="one">1</string>
     <string name="two">2</string>
     <string name="three">3</string>

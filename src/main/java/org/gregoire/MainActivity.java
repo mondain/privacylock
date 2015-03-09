@@ -2,6 +2,7 @@ package org.gregoire;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -12,11 +13,14 @@ import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -164,6 +168,7 @@ public class MainActivity extends Activity {
 	private void doCodeCheck(View view) {
 		Log.v(TAG, "doCodeCheck ");
 		// read the saved codes from previous submission
+		loadPref("test");
 		
 		// check the code entered against the saved codes
 		
@@ -198,6 +203,20 @@ public class MainActivity extends Activity {
 	    }, 250);
 	}
 
+	private byte[] loadPref(String key) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences.Editor editor = prefs.edit();
+		String str = prefs.getString(key, "");
+		Log.v(TAG, "Preference - key: " + key + " value: " + str);
+		byte[] value = null;
+		if (!("").equals(str)) {
+			value = Base64.decode(str, Base64.NO_WRAP | Base64.NO_PADDING);
+			Log.v(TAG, "" + Arrays.toString(value));
+		}
+		return value;
+	}
+
+	
 	@TargetApi(19)
 	// Build.VERSION_CODES.KITKAT
 	private void setUiVisibility(View topView) {

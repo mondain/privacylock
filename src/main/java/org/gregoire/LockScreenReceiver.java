@@ -8,7 +8,7 @@ import android.util.Log;
 public class LockScreenReceiver extends BroadcastReceiver {
 
 	private static String TAG = "LockScreenReceiver";
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.v(TAG, "onReceive " + intent.getAction());
@@ -20,5 +20,5 @@ public class LockScreenReceiver extends BroadcastReceiver {
 			context.startActivity(i);
 		}
 	}
-	
+
 }
