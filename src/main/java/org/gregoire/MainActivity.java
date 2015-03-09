@@ -1,5 +1,7 @@
 package org.gregoire;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -8,35 +10,34 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	private static String TAG = "privacylock";
 
-	private static final int ADMIN_INTENT = 15;
+	//private static final int ADMIN_INTENT = 15;
 
 	private DevicePolicyManager devicePolicyManager;
 
-	private ComponentName adminReceiverName;
+	//private ComponentName adminReceiverName;
+	
+	private ByteBuffer codeBuffer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -106,9 +107,7 @@ public class MainActivity extends Activity {
 				@Override
 				public void onClick(View view) {
 					Log.v(TAG, "Button: " + view.getId());
-					//((Button) view).setBackgroundColor(getResources().getColor(R.color.ltblue));
 					keyPressed(view.getId());
-					
 				}
 
 			});
@@ -117,9 +116,12 @@ public class MainActivity extends Activity {
 		wm.addView(topView, params);
 		// focus us
 		topView.requestFocus();
-
+		// get the policy manager
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-		adminReceiverName = new ComponentName(this, AdminReceiver.class);
+		//adminReceiverName = new ComponentName(this, AdminReceiver.class);
+		
+		// holder of the code
+		codeBuffer = ByteBuffer.allocate(64);
 	}
 
 	/**
@@ -130,48 +132,70 @@ public class MainActivity extends Activity {
 	private void keyPressed(int id) {
 		switch (id) {
 			case R.id.button1:
-
+				codeBuffer.put((byte) 3);
 				break;
 			case R.id.button2:
-
+				codeBuffer.put((byte) 0xcc);
 				break;
 			case R.id.button3:
-
+				codeBuffer.put((byte) 64);
 				break;
 			case R.id.button4:
-
+				codeBuffer.put((byte) 0xa1);
 				break;
 			case R.id.button5:
-
+				codeBuffer.put((byte) 22);
 				break;
 			case R.id.button6:
-
+				codeBuffer.put((byte) 0xef);
 				break;
 			case R.id.button7:
-
+				codeBuffer.put((byte) 8);
 				break;
 			case R.id.button8:
-
+				codeBuffer.put((byte) 1);
 				break;
 			case R.id.button9:
-
+				codeBuffer.put((byte) 0x0c);
 				break;
 		}
 	}
 
 	private void doCodeCheck(View view) {
 		Log.v(TAG, "doCodeCheck ");
-
+		// read the saved codes from previous submission
+		
+		// check the code entered against the saved codes
+		
+		// flip
+		codeBuffer.flip();
+		byte[] buf = new byte[codeBuffer.limit()];
+		codeBuffer.get(buf);
+		Log.d(TAG, "Code: " + new BigInteger(1, buf).toString(16));
+		
+		// code action - wipe etc?
+		
+		// pass = unlock
 		doUnlock(view);
+	}
+
+	private void doResetCode() {
+		codeBuffer.clear();
 	}
 
 	private void doUnlock(View view) {
 		Log.v(TAG, "doUnlock ");
 		doNotification();
 		startAndroidLauncher();
-		//Instead of using finish(), this totally destroys the process
-		android.os.Process.killProcess(android.os.Process.myPid());
-		this.finish();
+	    // execute some code after x time has passed
+	    Handler handler = new Handler(); 
+	    handler.postDelayed(new Runnable() { 
+	         public void run() { 
+	     		// instead of using finish(), this totally destroys the process
+	     		android.os.Process.killProcess(android.os.Process.myPid());
+	     		finish();
+	         } 
+	    }, 250);
 	}
 
 	@TargetApi(19)
@@ -236,20 +260,20 @@ public class MainActivity extends Activity {
 		Log.v(TAG, "onAttachedToWindow");
 		super.onAttachedToWindow();
 		// clear currently active code
-
+		doResetCode();
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		Log.v(TAG, "onActivityResult " + intent.getAction());
-		if (requestCode == ADMIN_INTENT) {
-			if (resultCode == RESULT_OK) {
-				Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
+	//	@Override
+	//	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+	//		Log.v(TAG, "onActivityResult " + intent.getAction());
+	//		if (requestCode == ADMIN_INTENT) {
+	//			if (resultCode == RESULT_OK) {
+	//				Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
+	//			} else {
+	//				Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
+	//			}
+	//		}
+	//	}
 
 	@Override
 	public void onBackPressed() {
@@ -270,6 +294,9 @@ public class MainActivity extends Activity {
 		notificationManager.notify(10001, notification);
 	}
 
+	/**
+	 * Start the default android launcher.
+	 */
 	private void startAndroidLauncher() {
 		PackageManager pm = getPackageManager();
 		Intent i = new Intent("android.intent.action.MAIN");
@@ -278,12 +305,15 @@ public class MainActivity extends Activity {
 		if (lst != null) {
 			for (ResolveInfo resolveInfo : lst) {
 				try {
-					Log.v(TAG, "Package: " + resolveInfo.activityInfo.packageName + " name: " + resolveInfo.activityInfo.name);
-					Intent home = new Intent("android.intent.action.MAIN");
-					home.addCategory("android.intent.category.HOME");
-					home.setClassName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-					startActivity(home);
-					break;
+					String packageName = resolveInfo.activityInfo.packageName;
+					Log.v(TAG, "Package: " + packageName + " name: " + resolveInfo.activityInfo.name);
+					if (!"org.gregoire".equals(packageName)) {
+    					Intent home = new Intent("android.intent.action.MAIN");
+    					home.addCategory("android.intent.category.HOME");
+    					home.setClassName(packageName, resolveInfo.activityInfo.name);
+    					startActivity(home);
+    					break;
+					}
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
