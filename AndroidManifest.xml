@@ -35,6 +35,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Notify"
+            android:label="@string/codeAccepted" >
+        </activity>
 
         <service android:name=".LockScreenService" />
 

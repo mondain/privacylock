@@ -4,6 +4,9 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,12 +14,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -68,31 +73,46 @@ public class MainActivity extends Activity {
 		unlock.setOnClickListener(new OnClickListener() {
 
 			@Override
-            public void onClick(View view) {
+			public void onClick(View view) {
 				Log.v(TAG, "onClick");
-				unlockScreen(view);
-            }
+				doCodeCheck(view);
+			}
 
 		});
 		unlock.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				Log.v(TAG, "onTouch");    
+				Log.v(TAG, "onTouch");
 				switch (event.getAction()) {
-				    case MotionEvent.ACTION_DOWN:
-				        //some code....
-				        break;
-				    case MotionEvent.ACTION_UP:
-				    	view.performClick();
-				        break;
-				    default:
-				        break;
-				    }
+					case MotionEvent.ACTION_DOWN:
+						//some code....
+						break;
+					case MotionEvent.ACTION_UP:
+						view.performClick();
+						break;
+					default:
+						break;
+				}
 				return true;
 			}
 
 		});
+		// attach listeners to the buttons
+		int[] buttons = { R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9 };
+		for (int button : buttons) {
+			((Button) topView.findViewById(button)).setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					Log.v(TAG, "Button: " + view.getId());
+					//((Button) view).setBackgroundColor(getResources().getColor(R.color.ltblue));
+					keyPressed(view.getId());
+					
+				}
+
+			});
+		}
 		// set the view
 		wm.addView(topView, params);
 		// focus us
@@ -102,19 +122,74 @@ public class MainActivity extends Activity {
 		adminReceiverName = new ComponentName(this, AdminReceiver.class);
 	}
 
-	@TargetApi(19) // Build.VERSION_CODES.KITKAT
+	/**
+	 * Code key pressed.
+	 * 
+	 * @param id
+	 */
+	private void keyPressed(int id) {
+		switch (id) {
+			case R.id.button1:
+
+				break;
+			case R.id.button2:
+
+				break;
+			case R.id.button3:
+
+				break;
+			case R.id.button4:
+
+				break;
+			case R.id.button5:
+
+				break;
+			case R.id.button6:
+
+				break;
+			case R.id.button7:
+
+				break;
+			case R.id.button8:
+
+				break;
+			case R.id.button9:
+
+				break;
+		}
+	}
+
+	private void doCodeCheck(View view) {
+		Log.v(TAG, "doCodeCheck ");
+
+		doUnlock(view);
+	}
+
+	private void doUnlock(View view) {
+		Log.v(TAG, "doUnlock ");
+		doNotification();
+		startAndroidLauncher();
+		//Instead of using finish(), this totally destroys the process
+		android.os.Process.killProcess(android.os.Process.myPid());
+		this.finish();
+	}
+
+	@TargetApi(19)
+	// Build.VERSION_CODES.KITKAT
 	private void setUiVisibility(View topView) {
 		Log.v(TAG, "Default >= KitKat");
 		topView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
 	}
 
-	@TargetApi(18) // Build.VERSION_CODES.JELLY_BEAN_MR2
- 	private void setUiVisibilityJB(View topView) {
+	@TargetApi(18)
+	// Build.VERSION_CODES.JELLY_BEAN_MR2
+	private void setUiVisibilityJB(View topView) {
 		Log.v(TAG, "JellyBean");
 		topView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LOW_PROFILE);
 	}
 
-	@TargetApi(14) // Build.VERSION_CODES.ICE_CREAM_SANDWICH
+	@TargetApi(14)
+	// Build.VERSION_CODES.ICE_CREAM_SANDWICH
 	private void setUiVisibilityICS(View topView) {
 		Log.v(TAG, "IceCreamSandwich");
 
@@ -160,6 +235,8 @@ public class MainActivity extends Activity {
 	public void onAttachedToWindow() {
 		Log.v(TAG, "onAttachedToWindow");
 		super.onAttachedToWindow();
+		// clear currently active code
+
 	}
 
 	@Override
@@ -178,6 +255,19 @@ public class MainActivity extends Activity {
 	public void onBackPressed() {
 		Log.v(TAG, "onBackPressed ");
 		return; //Do nothing!
+	}
+
+	/**
+	 * Show a notification.
+	 */
+	@SuppressWarnings("deprecation")
+	private void doNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Notification notification = new Notification(R.mipmap.ic_launcher, getString(R.string.codeAcceptedNotification), System.currentTimeMillis());
+		Intent notificationIntent = new Intent(this, MainActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		notification.setLatestEventInfo(MainActivity.this, getString(R.string.codeAccepted), getString(R.string.codeAcceptedNotification), pendingIntent);
+		notificationManager.notify(10001, notification);
 	}
 
 	private void startAndroidLauncher() {
@@ -199,14 +289,6 @@ public class MainActivity extends Activity {
 				}
 			}
 		}
-	}
-
-	public void unlockScreen(View view) {
-		Log.v(TAG, "unlockScreen ");
-		startAndroidLauncher();
-		//Instead of using finish(), this totally destroys the process
-		android.os.Process.killProcess(android.os.Process.myPid());
-		this.finish();
 	}
 
 }
