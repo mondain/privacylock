@@ -11,15 +11,20 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -30,17 +35,18 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class MainActivity extends Activity {
 
 	private static String TAG = "privacylock";
 
-	//private static final int ADMIN_INTENT = 15;
-
 	private DevicePolicyManager devicePolicyManager;
 
-	//private ComponentName adminReceiverName;
-	
+	private ComponentName adminReceiverName;
+
+	private LinearLayout mainView;
+
 	private ByteBuffer codeBuffer;
 
 	@Override
@@ -73,6 +79,8 @@ public class MainActivity extends Activity {
 		} else {
 			setUiVisibility(topView);
 		}
+		// get main view / layout
+		mainView = (LinearLayout) topView.findViewById(R.id.main_interface);
 		// get the button
 		Button unlock = (Button) topView.findViewById(R.id.unlockBtn);
 		unlock.setOnClickListener(new OnClickListener() {
@@ -122,8 +130,8 @@ public class MainActivity extends Activity {
 		topView.requestFocus();
 		// get the policy manager
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-		//adminReceiverName = new ComponentName(this, AdminReceiver.class);
-		
+		adminReceiverName = new ComponentName(this, AdminReceiver.class);
+
 		// holder of the code
 		codeBuffer = ByteBuffer.allocate(64);
 	}
@@ -157,7 +165,7 @@ public class MainActivity extends Activity {
 				codeBuffer.put((byte) 8);
 				break;
 			case R.id.button8:
-				codeBuffer.put((byte) 1);
+				codeBuffer.put((byte) 0xa7);
 				break;
 			case R.id.button9:
 				codeBuffer.put((byte) 0x0c);
@@ -167,43 +175,195 @@ public class MainActivity extends Activity {
 
 	private void doCodeCheck(View view) {
 		Log.v(TAG, "doCodeCheck ");
-		// read the saved codes from previous submission
-		loadPref("test");
-		
-		// check the code entered against the saved codes
-		
-		// flip
+		// get the entered code
 		codeBuffer.flip();
-		byte[] buf = new byte[codeBuffer.limit()];
-		codeBuffer.get(buf);
-		Log.d(TAG, "Code: " + new BigInteger(1, buf).toString(16));
-		
-		// code action - wipe etc?
-		
-		// pass = unlock
-		doUnlock(view);
+		byte[] entered = new byte[codeBuffer.limit()];
+		codeBuffer.get(entered);
+		Log.d(TAG, "Code: " + new BigInteger(1, entered).toString(16));
+		// read the saved codes from previous submission
+		int[] actions = new int[] { R.string.opt_unlock, R.string.opt_clear_call_log, R.string.opt_clear_sms, R.string.opt_clear_camera_roll, R.string.opt_send_emergency_sms, R.string.opt_wipe };
+		for (int action : actions) {
+			// check the code entered against the saved codes
+			byte[] saved = loadPref(action);
+			if (saved != null) {
+				if (Arrays.equals(entered, saved)) {
+					// code action - wipe etc?
+					switch (action) {
+						case R.string.opt_unlock:
+							// pass = unlock
+							doUnlock(view);
+							break;
+						case R.string.opt_clear_call_log:
+							doClearCallLog(view);
+							break;
+						case R.string.opt_clear_sms:
+							doClearSMS(view);
+							break;
+						case R.string.opt_clear_camera_roll:
+							doClearCameraRoll(view);
+							break;
+						case R.string.opt_send_emergency_sms:
+							doEmergencySMS(view);
+							break;
+						case R.string.opt_wipe:
+							doWipe(view);
+							break;
+					}
+				}
+			} else {
+				// by-pass for unlock only
+				if (action == R.string.opt_unlock) {
+					Log.i(TAG, "Unlock bypass");
+					doUnlock(view);
+					break;
+				}
+			}
+		}
+		doResetCode();
 	}
 
 	private void doResetCode() {
 		codeBuffer.clear();
 	}
 
+	/**
+	 * Unlock.
+	 * 
+	 * @param view
+	 */
 	private void doUnlock(View view) {
 		Log.v(TAG, "doUnlock ");
+		// set a notification
 		doNotification();
-		startAndroidLauncher();
-	    // execute some code after x time has passed
-	    Handler handler = new Handler(); 
-	    handler.postDelayed(new Runnable() { 
-	         public void run() { 
-	     		// instead of using finish(), this totally destroys the process
-	     		android.os.Process.killProcess(android.os.Process.myPid());
-	     		finish();
-	         } 
-	    }, 250);
+		// hide the keypad
+		mainView.setVisibility(View.GONE);
+		// a time in millis to start the handlers with to delay if needed
+		long millis = 100;
+		// become admin (so wipe will work)
+		if (devicePolicyManager.isAdminActive(adminReceiverName)) {
+			Log.v(TAG, "Already admin");
+		}
+		// execute some code after x time has passed
+		Handler launchHandler = new Handler();
+		launchHandler.postDelayed(new Runnable() {
+			public void run() {
+				// start the regular launcher
+				startAndroidLauncher();
+			}
+		}, millis);
+		// execute some code after x time has passed
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			public void run() {
+				// instead of using finish(), this totally destroys the process
+				android.os.Process.killProcess(android.os.Process.myPid());
+				finish();
+			}
+		}, (millis + 100));
 	}
 
-	private byte[] loadPref(String key) {
+	/**
+	 * Clear the call log.
+	 * 
+	 * @param view
+	 */
+	private void doClearCallLog(View view) {
+		Log.i(TAG, "Bye bye call log");
+		// get Content Resolver object, which will deal with Content Provider
+		ContentResolver cr = getContentResolver();
+		// delete all
+		int i = cr.delete(android.provider.CallLog.Calls.CONTENT_URI, null, null);
+		Log.i(TAG, "Deleted: " + i + " Calls");
+		/*
+		// list required columns
+		final String[] cols = new String[] { "number" };
+		Cursor c = cr.query(android.provider.CallLog.Calls.CONTENT_URI, cols, null, null, null);
+		if (c.getCount() <= 0) {
+			Log.i(TAG, "Call log is empty");
+		} else {
+			while (c.moveToNext()) {
+				String number = c.getString(0);
+				Log.v(TAG, "Logged number: " + number);
+				String queryString = String.format("NUMBER='%s'", number);
+				int i = cr.delete(android.provider.CallLog.Calls.CONTENT_URI, queryString, null);
+				if (i >= 1) {
+					Log.i(TAG, "Deleted");
+				}
+			}
+		}
+		*/
+	}
+
+	/**
+	 * Clear SMS data.
+	 * 
+	 * @param view
+	 */
+	private void doClearSMS(View view) {
+		Log.i(TAG, "Bye bye texts");
+		// get Content Resolver object, which will deal with Content Provider
+		ContentResolver cr = getContentResolver();
+		// delete all
+		int i = cr.delete(Uri.parse("content://sms/"), null, null);
+		Log.i(TAG, "Deleted: " + i + " SMS");
+		/*
+		// uri to the inbox, draft, and sent
+		Uri[] uris = new Uri[] { Uri.parse("content://sms/inbox"), Uri.parse("content://sms/draft"), Uri.parse("content://sms/sent") };
+		// list required columns
+		final String[] cols = new String[] { "address" };
+		for (int u = 0; u < uris.length; u++) {
+			// fetch Inbox SMS Message from Built-in Content Provider
+			Cursor c = cr.query(uris[u], cols, null, null, null);
+			if (c.getCount() <= 0) {
+				Log.i(TAG, "SMS " + uris[u] + " is empty");
+			} else {
+				while (c.moveToNext()) {
+					String addr = c.getString(0);
+					Log.v(TAG, "SMS addr: " + addr);
+					String queryString = String.format("ADDRESS='%s'", addr);
+					int i = cr.delete(uris[u], queryString, null);
+					if (i >= 1) {
+						Log.i(TAG, "Deleted");
+					}
+				}
+			}
+		}
+		*/
+	}
+
+	/**
+	 * Clear media data.
+	 * 
+	 * @param view
+	 */
+	private void doClearCameraRoll(View view) {
+		Log.i(TAG, "Bye bye pix");
+		// get Content Resolver object, which will deal with Content Provider
+		ContentResolver cr = getContentResolver();
+		// delete all
+		int i = cr.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null);
+		Log.i(TAG, "Deleted: " + i + " Images");
+		i = cr.delete(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null);
+		Log.i(TAG, "Deleted: " + i + " Videos");
+		sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+	}
+
+	private void doEmergencySMS(View view) {
+
+	}
+
+	/**
+	 * Wipe the device.
+	 * 
+	 * @param view
+	 */
+	private void doWipe(View view) {
+		Log.i(TAG, "Bye bye");
+		//devicePolicyManager.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE);
+	}
+
+	private byte[] loadPref(int id) {
+		String key = String.format("%d", id);
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		SharedPreferences.Editor editor = prefs.edit();
 		String str = prefs.getString(key, "");
@@ -216,7 +376,6 @@ public class MainActivity extends Activity {
 		return value;
 	}
 
-	
 	@TargetApi(19)
 	// Build.VERSION_CODES.KITKAT
 	private void setUiVisibility(View topView) {
@@ -238,32 +397,6 @@ public class MainActivity extends Activity {
 
 	}
 
-	//	@Override
-	//	public void onClick(View v) {
-	//		switch (v.getId()) {
-	//			case R.id.btnEnable:
-	//				Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-	//				intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
-	//				intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, description);
-	//				startActivityForResult(intent, ADMIN_INTENT);
-	//				break;
-	//
-	//			case R.id.btnDisable:
-	//				mDevicePolicyManager.removeActiveAdmin(mComponentName);
-	//				Toast.makeText(getApplicationContext(), "Admin registration removed", Toast.LENGTH_SHORT).show();
-	//				break;
-	//
-	//			case R.id.btnLock:
-	//				boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
-	//				if (isAdmin) {
-	//					mDevicePolicyManager.lockNow();
-	//				} else {
-	//					Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
-	//				}
-	//				break;
-	//		}
-	//	}	
-
 	@Override
 	protected void onNewIntent(Intent intent) {
 		Log.v(TAG, "onNewIntent " + intent.getAction());
@@ -281,18 +414,6 @@ public class MainActivity extends Activity {
 		// clear currently active code
 		doResetCode();
 	}
-
-	//	@Override
-	//	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-	//		Log.v(TAG, "onActivityResult " + intent.getAction());
-	//		if (requestCode == ADMIN_INTENT) {
-	//			if (resultCode == RESULT_OK) {
-	//				Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
-	//			} else {
-	//				Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
-	//			}
-	//		}
-	//	}
 
 	@Override
 	public void onBackPressed() {
@@ -327,11 +448,11 @@ public class MainActivity extends Activity {
 					String packageName = resolveInfo.activityInfo.packageName;
 					Log.v(TAG, "Package: " + packageName + " name: " + resolveInfo.activityInfo.name);
 					if (!"org.gregoire".equals(packageName)) {
-    					Intent home = new Intent("android.intent.action.MAIN");
-    					home.addCategory("android.intent.category.HOME");
-    					home.setClassName(packageName, resolveInfo.activityInfo.name);
-    					startActivity(home);
-    					break;
+						Intent home = new Intent("android.intent.action.MAIN");
+						home.addCategory("android.intent.category.HOME");
+						home.setClassName(packageName, resolveInfo.activityInfo.name);
+						startActivity(home);
+						break;
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
