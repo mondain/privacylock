@@ -5,10 +5,16 @@
     <string name="unlock">UNLOCK</string>
     <string name="codeAccepted">Code Accepted</string>
     <string name="codeAcceptedNotification">Code Accepted</string>
+    <string name="codeSavedNotification">Code Sequence Saved</string>
     <string name="conf">Configuration</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
-    <string name="quit">Quit</string>
+    <string name="quit">Quit</string>    
+    <string name="forgot">Forgot My Code</string>
+    
+    <string name="admin">Administration</string>
+    <string name="adminRegisterd">Registered As Admin</string>
+    <string name="adminRegisterFailed">Failed to register as Admin</string>
     
     <string name="opt_unlock">Unlock Device</string>
     
@@ -17,7 +23,11 @@
     <string name="opt_clear_camera_roll">Clear Camera Roll</string>
     
     <string name="opt_send_emergency_sms">Send Emergency SMS</string>
-        
+    <string name="smsblurb">Enter emergency number here</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">Send New Code</string>
+    
     <string name="opt_wipe">Wipe Device</string>
     
     <string name="one">1</string>

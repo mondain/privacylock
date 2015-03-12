@@ -8,6 +8,11 @@
 	<packaging>apk</packaging>
 	<name>privacylock</name>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+    </properties>
+    
 	<dependencies>
 		<dependency>
 			<groupId>com.google.android</groupId>
@@ -23,6 +28,7 @@
 			<scope>system</scope>
 			<systemPath>${env.ANDROID_HOME}/extras/android/support/v7/gridlayout/libs/android-support-v7-gridlayout.jar</systemPath>
 		</dependency>
+ -->
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v13</artifactId>
@@ -30,7 +36,6 @@
 			<scope>system</scope>
 			<systemPath>${env.ANDROID_HOME}/extras/android/support/v13/android-support-v13.jar</systemPath>
 		</dependency>
- -->
 	</dependencies>
 	<build>
 		<plugins>

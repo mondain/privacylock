@@ -4,7 +4,11 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.regex.Pattern;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -28,6 +32,7 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,11 +46,17 @@ public class MainActivity extends Activity {
 
 	private static String TAG = "privacylock";
 
+	public final static byte[] CODEX = { (byte) 3, (byte) 0xcc, (byte) 64, (byte) 0xa1, (byte) 0x22, (byte) 0xef, (byte) 0x8a, (byte) 0x11, (byte) 0x0c };
+	
 	private DevicePolicyManager devicePolicyManager;
 
 	private ComponentName adminReceiverName;
 
 	private LinearLayout mainView;
+	
+	private Button unlock;
+	
+	private Button forgot;
 
 	private ByteBuffer codeBuffer;
 
@@ -82,7 +93,7 @@ public class MainActivity extends Activity {
 		// get main view / layout
 		mainView = (LinearLayout) topView.findViewById(R.id.main_interface);
 		// get the button
-		Button unlock = (Button) topView.findViewById(R.id.unlockBtn);
+		unlock = (Button) topView.findViewById(R.id.unlockBtn);
 		unlock.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -111,6 +122,16 @@ public class MainActivity extends Activity {
 			}
 
 		});
+		forgot = (Button) topView.findViewById(R.id.forgotCodeBtn);
+		forgot.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				Log.v(TAG, "onClick");
+				doSendNewUnlockCode(view);
+			}
+
+		});		
 		// attach listeners to the buttons
 		int[] buttons = { R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9 };
 		for (int button : buttons) {
@@ -144,31 +165,31 @@ public class MainActivity extends Activity {
 	private void keyPressed(int id) {
 		switch (id) {
 			case R.id.button1:
-				codeBuffer.put((byte) 3);
+				codeBuffer.put(CODEX[0]);
 				break;
 			case R.id.button2:
-				codeBuffer.put((byte) 0xcc);
+				codeBuffer.put(CODEX[1]);
 				break;
 			case R.id.button3:
-				codeBuffer.put((byte) 64);
+				codeBuffer.put(CODEX[2]);
 				break;
 			case R.id.button4:
-				codeBuffer.put((byte) 0xa1);
+				codeBuffer.put(CODEX[3]);
 				break;
 			case R.id.button5:
-				codeBuffer.put((byte) 22);
+				codeBuffer.put(CODEX[4]);
 				break;
 			case R.id.button6:
-				codeBuffer.put((byte) 0xef);
+				codeBuffer.put(CODEX[5]);
 				break;
 			case R.id.button7:
-				codeBuffer.put((byte) 8);
+				codeBuffer.put(CODEX[6]);
 				break;
 			case R.id.button8:
-				codeBuffer.put((byte) 0xa7);
+				codeBuffer.put(CODEX[7]);
 				break;
 			case R.id.button9:
-				codeBuffer.put((byte) 0x0c);
+				codeBuffer.put(CODEX[8]);
 				break;
 		}
 	}
@@ -181,7 +202,7 @@ public class MainActivity extends Activity {
 		codeBuffer.get(entered);
 		Log.d(TAG, "Code: " + new BigInteger(1, entered).toString(16));
 		// read the saved codes from previous submission
-		int[] actions = new int[] { R.string.opt_unlock, R.string.opt_clear_call_log, R.string.opt_clear_sms, R.string.opt_clear_camera_roll, R.string.opt_send_emergency_sms, R.string.opt_wipe };
+		int[] actions = new int[] { R.string.opt_unlock, R.string.opt_clear_call_log, R.string.opt_clear_sms, R.string.opt_clear_camera_roll, R.string.opt_send_emergency_sms, R.string.opt_send_new_code, R.string.opt_wipe };
 		for (int action : actions) {
 			// check the code entered against the saved codes
 			byte[] saved = loadPref(action);
@@ -204,6 +225,18 @@ public class MainActivity extends Activity {
 							break;
 						case R.string.opt_send_emergency_sms:
 							doEmergencySMS(view);
+							break;
+						case R.string.opt_send_new_code:
+							unlock.setVisibility(View.GONE);
+							forgot.setVisibility(View.VISIBLE);
+							// redisplay the unlock button after 5 minutes
+    						// execute some code after x time has passed
+    						new Handler().postDelayed(new Runnable() {
+    							public void run() {
+    								unlock.setVisibility(View.VISIBLE);
+    								forgot.setVisibility(View.GONE);
+    							}
+    						}, (3 * 60000));
 							break;
 						case R.string.opt_wipe:
 							doWipe(view);
@@ -348,10 +381,48 @@ public class MainActivity extends Activity {
 		sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 	}
 
+	/**
+	 * Send an emergency SMS message to a predefined phone number.
+	 * Include: GPS location and message.
+	 * 
+	 * @param view
+	 */
 	private void doEmergencySMS(View view) {
-
+		Log.i(TAG, "Sending emergency SMS");
+		
 	}
 
+	/**
+	 * You forgot your code and you're locked-out. Generate a new unlock code and send it to pre-saved email address.
+	 * If an address is not saved, read the owners email address.
+	 * 
+	 * @param view
+	 */
+	private void doSendNewUnlockCode(View view) {
+		Log.i(TAG, "Sending new unlock code");
+		// generate new 4 char code
+		byte[] code = new byte[4];
+		Random rnd = new Random();
+		int x = rnd.nextInt(8), y = rnd.nextInt(8), f = rnd.nextInt(8), b = rnd.nextInt(8);
+		code[0] = CODEX[x];
+		code[1] = CODEX[y];
+		code[2] = CODEX[f];
+		code[3] = CODEX[b];
+		String sequence = Arrays.toString(new int[]{x, y, f, b});
+		Log.v(TAG, "Generated code: " + sequence + " = " + Arrays.toString(code));
+		// no email saved so lookup owners address
+		Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
+		Account[] accounts = AccountManager.get(this).getAccounts();
+		for (Account account : accounts) {
+		    if (emailPattern.matcher(account.name).matches()) {
+		        String email = account.name;
+		        Log.v(TAG, "Found email address: " + email);
+		        break;
+		    }
+		}
+		
+	}	
+	
 	/**
 	 * Wipe the device.
 	 * 
