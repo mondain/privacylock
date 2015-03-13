@@ -12,23 +12,39 @@
     <string name="quit">Quit</string>    
     <string name="forgot">Forgot My Code</string>
     
+    <string name="enter_sequence">Enter a key sequence and click save</string>    
+    
     <string name="admin">Administration</string>
     <string name="adminRegisterd">Registered As Admin</string>
     <string name="adminRegisterFailed">Failed to register as Admin</string>
     
     <string name="opt_unlock">Unlock Device</string>
+    <string name="opt_desc_unlock">Unlocks your device, similar to the standard keyguard; This option must be completed prior to enabling any additional options</string>
     
     <string name="opt_clear_call_log">Clear Call Logs</string>
+    <string name="opt_desc_clear_call_log">Deletes all the call log entries</string>
+    
     <string name="opt_clear_sms">Clear SMS Messages</string>
+    <string name="opt_desc_clear_sms">Attempts to delete all SMS messages on the device; Be aware that this does not work with Hangouts</string>
+    
     <string name="opt_clear_camera_roll">Clear Camera Roll</string>
+    <string name="opt_desc_clear_camera_roll">Removes all pictures and videos on the device</string>
     
     <string name="opt_send_emergency_sms">Send Emergency SMS</string>
-    <string name="smsblurb">Enter emergency number here</string>
+    <string name="opt_desc_send_emergency_sms">Attemps to send an emergency message to the number specified herein</string>
+    <string name="smsblurb">Enter emergency number</string>
+    <string name="smsNum">Emergency Number</string>    
+    <string name="emergencyTemplate">This emergency message has been generated, the sender may be in need of assistance</string>
+    <string name="emergencyTemplateLoc">This emergency message has been generated at GPS location: %1$s %2$s, the sender may be in need of assistance</string>
     
     <!-- Failsafe sequence is 13 of the 9 key -->
     <string name="opt_send_new_code">Send New Code</string>
+    <string name="opt_desc_send_new_code">Generates a new device unlock code and emails it to you or the email address specified herein</string>
+    <string name="emailblurb">Enter destination email</string>    
+    <string name="emailAddr">Email Address</string>    
     
     <string name="opt_wipe">Wipe Device</string>
+    <string name="opt_desc_wipe">Be very careful with this option! A device wipe removes all your content and resets the phone back to its original state</string>
     
     <string name="one">1</string>
     <string name="two">2</string>

@@ -1,9 +1,9 @@
 package org.gregoire;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.Activity;
@@ -15,24 +15,33 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PrefsActivity extends Activity {
 
 	private static String TAG = "PrefsActivity";
+
+	private static boolean DEBUG_MODE;
 
 	private static final String PREF_EMPTY_STRING = "";
 
@@ -46,9 +55,16 @@ public class PrefsActivity extends Activity {
 
 	private LinearLayout entryView;
 	
+	private TableRow smsRow;
+	
 	private EditText smsNumberEntryBox;
+	
+	private TableRow emailRow;
+	
+	private EditText emailEntryBox;
 
-	private HashMap<String, Integer> map = new HashMap<String, Integer>();
+	// holder of list items / options
+	private ArrayList<ListItem> list = new ArrayList<ListItem>();
 
 	private AtomicInteger currentSelectedId = new AtomicInteger();
 
@@ -57,44 +73,63 @@ public class PrefsActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// get debug mode
+		/*
+        PackageManager pacMan = getPackageManager();
+        String pacName = getPackageName();
+        ApplicationInfo appInfo = null;
+        try {
+            appInfo = pacMan.getApplicationInfo(pacName, 0);
+        	DEBUG_MODE = (0 != (appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE));
+        } catch (NameNotFoundException e) {
+        	e.printStackTrace();
+        }
+        */
+        DEBUG_MODE = BuildConfig.DEBUG;
+        // set the layout
 		setContentView(R.layout.activity_prefs);
 		// get the policy manager
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		adminReceiverName = new ComponentName(this, AdminReceiver.class);
-		// load the map
-		map.put(getString(R.string.opt_unlock), R.string.opt_unlock);
-		map.put(getString(R.string.opt_clear_call_log), R.string.opt_clear_call_log);
-		map.put(getString(R.string.opt_clear_sms), R.string.opt_clear_sms);
-		map.put(getString(R.string.opt_clear_camera_roll), R.string.opt_clear_camera_roll);
-		map.put(getString(R.string.opt_send_emergency_sms), R.string.opt_send_emergency_sms);
-		map.put(getString(R.string.opt_send_new_code), R.string.opt_send_new_code);
-		map.put(getString(R.string.opt_wipe), R.string.opt_wipe);
+		// load the list
+		list.add(new ListItem(R.string.opt_unlock, getString(R.string.opt_unlock), getString(R.string.opt_desc_unlock)));
+		list.add(new ListItem(R.string.opt_clear_call_log, getString(R.string.opt_clear_call_log), getString(R.string.opt_desc_clear_call_log)));
+		list.add(new ListItem(R.string.opt_clear_sms, getString(R.string.opt_clear_sms), getString(R.string.opt_desc_clear_sms)));
+		list.add(new ListItem(R.string.opt_clear_camera_roll, getString(R.string.opt_clear_camera_roll), getString(R.string.opt_desc_clear_camera_roll)));
+		list.add(new ListItem(R.string.opt_send_emergency_sms, getString(R.string.opt_send_emergency_sms), getString(R.string.opt_desc_send_emergency_sms)));
+		list.add(new ListItem(R.string.opt_send_new_code, getString(R.string.opt_send_new_code), getString(R.string.opt_desc_send_new_code)));
+		list.add(new ListItem(R.string.opt_wipe, getString(R.string.opt_wipe), getString(R.string.opt_desc_wipe)));
 		// get the views
 		mainView = (LinearLayout) findViewById(R.id.main_interface);
 		entryView = (LinearLayout) findViewById(R.id.sub_interface);
+		smsRow = (TableRow) findViewById(R.id.smsRow);
 		smsNumberEntryBox = (EditText) findViewById(R.id.smsEntry);
+		emailRow = (TableRow) findViewById(R.id.emailRow);
+		emailEntryBox = (EditText) findViewById(R.id.emailEntry);
 		// get the listing
 		final ListView listview = (ListView) findViewById(R.id.listView1);
-		final ArrayList<String> list = new ArrayList<String>();
-		list.addAll(map.keySet());
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
-		listview.setAdapter(adapter);
+		listview.setAdapter(new ListItemAdapter<ListItem>(this, R.layout.list_detail, list));
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-				final String item = (String) parent.getItemAtPosition(position);
-				Log.v(TAG, "Selected: " + item + " id: " + map.get(item));
+				final ListItem item = (ListItem) parent.getItemAtPosition(position);
+				if (DEBUG_MODE) Log.v(TAG, "Selected: " + item);
 				// get the integer id
-				currentSelectedId.set(map.get(item));
+				currentSelectedId.set(item.id);
 				// show the entry view (keypad or sms value)
 				mainView.setVisibility(View.GONE);
 				entryView.setVisibility(View.VISIBLE);
 				// if emergency sms show the txt box
 				if (currentSelectedId.get() == R.string.opt_send_emergency_sms) {
-					smsNumberEntryBox.setVisibility(View.VISIBLE);
+					smsRow.setVisibility(View.VISIBLE);
 				} else {
-					smsNumberEntryBox.setVisibility(View.GONE);
+					smsRow.setVisibility(View.GONE);
+				}
+				if (currentSelectedId.get() == R.string.opt_send_new_code) {
+					emailRow.setVisibility(View.VISIBLE);
+				} else {
+					emailRow.setVisibility(View.GONE);
 				}
 			}
 
@@ -106,7 +141,7 @@ public class PrefsActivity extends Activity {
 
 				@Override
 				public void onClick(View view) {
-					Log.v(TAG, "Button: " + view.getId());
+					if (DEBUG_MODE) Log.v(TAG, "Button: " + view.getId());
 					switch (view.getId()) {
 						case R.id.button1:
 							codeBuffer.put(MainActivity.CODEX[0]);
@@ -151,56 +186,77 @@ public class PrefsActivity extends Activity {
 			
 			@Override
 			public void onClick(View view) {
-				Log.v(TAG, "Save: " + currentSelectedId.get());
+				final int selectedItem = currentSelectedId.get();
+				if (DEBUG_MODE) Log.v(TAG, "Save: " + selectedItem);
 				if (codeBuffer.position() == 0) {
-					Log.v(TAG, "No code entered");
+					if (DEBUG_MODE) Log.v(TAG, "No code entered");
 				} else {
+					// get the app context
+					final Context context = getApplicationContext();
 					// get the bytes
 					codeBuffer.flip();
 					byte[] buf = new byte[codeBuffer.limit()];
 					codeBuffer.get(buf);
 					// save the current selection
-					if (savePref(String.format("%d", currentSelectedId.get()), buf)) {
-						Log.v(TAG, "Pref for " + currentSelectedId.get() + " saved");
+					if (savePref(context, String.format("%d", selectedItem), buf)) {
+						if (DEBUG_MODE) Log.v(TAG, "Pref for " + selectedItem + " saved");
 						Toast.makeText(getApplicationContext(), getString(R.string.codeSavedNotification), Toast.LENGTH_SHORT).show();
 					}
 					codeBuffer.clear();
+					switch(selectedItem) {
+						case R.string.opt_send_emergency_sms:
+							// if its sms emergency save the number
+							String number = smsNumberEntryBox.getText().toString();
+							try {
+	                            if (savePref(context, "999", number.getBytes("UTF8"))) {
+	                            	if (DEBUG_MODE) Log.v(TAG, "SMS number: " + number + " saved");
+	                            }
+                            } catch (UnsupportedEncodingException e) {
+                            	if (DEBUG_MODE) Log.w(TAG, "SMS number: " + number + " save failed " + e.getLocalizedMessage());
+                            }
+							break;
+						case R.string.opt_send_new_code:
+							// if its failsafe save the email address
+							String email = emailEntryBox.getText().toString();
+    						try {
+    							if (savePref(context, "666", email.getBytes("UTF8"))) {
+    								if (DEBUG_MODE) Log.v(TAG, "Email: " + email + " saved");
+    							}
+                            } catch (UnsupportedEncodingException e) {
+								if (DEBUG_MODE) Log.w(TAG, "Email: " + email + " save failed " + e.getLocalizedMessage());
+                            }
+							break;
+						case R.string.opt_wipe:
+	    					// become admin (so wipe will work)
+	    					if (!devicePolicyManager.isAdminActive(adminReceiverName)) {
+	    						if (DEBUG_MODE) Log.v(TAG, "Admin is not active");
+	    						// execute some code after x time has passed
+	    						Handler handler = new Handler();
+	    						handler.postDelayed(new Runnable() {
+	    							public void run() {
+	    	    						// try to become active – must happen here in this activity, to get result
+	    	    						startActivityForResult(intent, 1); // 1 is enabled, 0 is disabled
+	    							}
+	    						}, 250);
+	    					} else {
+	    						// already is a device administrator, can do security operations now
+	    						if (DEBUG_MODE) Log.v(TAG, "Already admin");
+	    					}
+							break;
+					}
 					// check for special "send new code" sequence and add it if its missing
-					if (loadPref(String.format("%d", R.string.opt_send_new_code)) == null) {
+					if (PrefsActivity.loadPref(context, String.format("%d", R.string.opt_send_new_code)) == null) {
 						byte[] failsafe = new byte[13];
 						Arrays.fill(failsafe, MainActivity.CODEX[8]);
-						if (savePref(String.format("%d", R.string.opt_send_new_code), failsafe)) {
-							Log.v(TAG, "Failsafe sequence saved");
+						if (savePref(context, String.format("%d", R.string.opt_send_new_code), failsafe)) {
+							if (DEBUG_MODE) Log.v(TAG, "Failsafe sequence saved");
 						}
-					}	
-					// if its sms emergency save the number
-					if (currentSelectedId.get() == R.string.opt_send_emergency_sms) {
-						String number = smsNumberEntryBox.getText().toString();
-						if (savePref("sms-number", number.getBytes())) {
-							Log.v(TAG, "SMS number: " + number + " saved");
-						}
-					}					
-					// request admin for actions requiring it
-					if (currentSelectedId.get() == R.string.opt_wipe) {
-    					// become admin (so wipe will work)
-    					if (!devicePolicyManager.isAdminActive(adminReceiverName)) {
-    						Log.v(TAG, "Admin is not active");
-    						// execute some code after x time has passed
-    						Handler handler = new Handler();
-    						handler.postDelayed(new Runnable() {
-    							public void run() {
-    	    						// try to become active – must happen here in this activity, to get result
-    	    						startActivityForResult(intent, 1); // 1 is enabled, 0 is disabled
-    							}
-    						}, 250);
-    					} else {
-    						// already is a device administrator, can do security operations now
-    						Log.v(TAG, "Already admin");
-    					}
 					}
 				}
 				// hide the keypad
 				entryView.setVisibility(View.GONE);
+				smsRow.setVisibility(View.GONE);
+				emailRow.setVisibility(View.GONE);
 				mainView.setVisibility(View.VISIBLE);
 			}
 
@@ -209,7 +265,7 @@ public class PrefsActivity extends Activity {
 
 			@Override
 			public void onClick(View view) {
-				Log.v(TAG, "Cancel");
+				if (DEBUG_MODE) Log.v(TAG, "Cancel");
 				// clear the current selection
 				currentSelectedId.set(0);
 				codeBuffer.clear();
@@ -223,7 +279,7 @@ public class PrefsActivity extends Activity {
 
 			@Override
 			public void onClick(View view) {
-				Log.v(TAG, "Quit");
+				if (DEBUG_MODE) Log.v(TAG, "Quit");
 				// clear the current selection
 				currentSelectedId.set(0);
 				codeBuffer.clear();
@@ -236,34 +292,33 @@ public class PrefsActivity extends Activity {
 		codeBuffer = ByteBuffer.allocate(64);
 	}
 
-	private boolean savePref(String key, byte[] val) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+	public final static boolean savePref(Context context, String key, byte[] val) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String str = Base64.encodeToString(val, Base64.NO_WRAP | Base64.NO_PADDING);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString(key, str);
 		return editor.commit();
 	}
 
-	private byte[] loadPref(String key) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+	public final static byte[] loadPref(Context context, String key) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
 		String str = prefs.getString(key, PREF_EMPTY_STRING);
-		Log.v(TAG, str);
+		if (DEBUG_MODE) Log.v(TAG, str);
 		byte[] value = Base64.decode(str, Base64.NO_WRAP | Base64.NO_PADDING);
-		Log.v(TAG, "");
 		return value;
 	}
 	
-	private byte[] loadPref(int id) {
+	public final static byte[] loadPref(Context context, int id) {
 		String key = String.format("%d", id);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
 		String str = prefs.getString(key, "");
-		Log.v(TAG, "Preference - key: " + key + " value: " + str);
+		if (DEBUG_MODE) Log.v(TAG, "Preference - key: " + key + " value: " + str);
 		byte[] value = null;
 		if (!("").equals(str)) {
 			value = Base64.decode(str, Base64.NO_WRAP | Base64.NO_PADDING);
-			Log.v(TAG, "" + Arrays.toString(value));
+			if (DEBUG_MODE) Log.v(TAG, "" + Arrays.toString(value));
 		}
 		return value;
 	}
@@ -277,7 +332,7 @@ public class PrefsActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		Log.v(TAG, "onActivityResult - intent: " + intent + " req: " + requestCode + " res: " + resultCode);
+		if (DEBUG_MODE) Log.v(TAG, "onActivityResult - intent: " + intent + " req: " + requestCode + " res: " + resultCode);
 		if (requestCode == ADMIN_INTENT) {
 			final String str;
 			if (resultCode == RESULT_OK) {
@@ -294,4 +349,61 @@ public class PrefsActivity extends Activity {
 		}
 	}
 
+	private class ListItemAdapter<T> extends ArrayAdapter<ListItem> {
+
+		public ListItemAdapter(Context context, int textViewResourceId, ArrayList<ListItem> list) {
+			super(context, textViewResourceId, list);
+			if (DEBUG_MODE) Log.v(TAG, "Adapter - list: " + list);
+		}
+
+		private class ViewHolder {
+
+			TextView title;
+
+			TextView desc;
+		}
+
+		@SuppressWarnings("unchecked")
+        @Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder = null;
+			if (convertView == null) {
+				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = vi.inflate(R.layout.list_detail, null);
+				holder = new ViewHolder();
+				holder.title = (TextView) convertView.findViewById(R.id.textTitle);
+				holder.desc = (TextView) convertView.findViewById(R.id.textDesc);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			if (!isEmpty()) {
+				ListItem item = getItem(position);
+				holder.title.setText(item.title);
+				holder.desc.setText(item.desc);
+			}
+			return convertView;
+		}
+		
+	}	
+	
+	private class ListItem {
+		
+		int id;
+		String title;
+		String desc;
+		
+		ListItem(int id, String title, String desc) {
+			this.id = id;
+			this.title = title;
+			this.desc = desc;
+		}
+
+		@Override
+        public String toString() {
+	        return "ListItem [id=" + id + ", title=" + title + ", desc=" + desc + "]";
+        }
+		
+	}
+	
 }
