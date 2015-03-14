@@ -11,10 +11,10 @@
         android:id="@+id/main_interface"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="2dp"
         android:orientation="vertical" >
 
         <TextView
@@ -28,7 +28,7 @@
         <ListView
             android:id="@+id/listView1"
             android:layout_width="wrap_content"
-            android:layout_height="360dp" />
+            android:layout_height="240dp" />
 
         <Button
             android:id="@+id/quitBtn"
@@ -43,12 +43,12 @@
         android:id="@+id/sub_interface"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="2dp"
         android:orientation="vertical"
-        android:padding="4dp"
+        android:padding="2dp"
         android:visibility="gone" >
 
         <TextView
@@ -61,18 +61,18 @@
         <!-- Keypad -->
 
         <TableLayout
-            android:layout_width="320dp"
+            android:layout_width="270dp"
             android:layout_height="fill_parent"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="8"
             android:stretchColumns="*" >
 
-            <TableRow android:padding="2dp" >
+            <TableRow android:padding="1dp" >
 
                 <Button
                     android:id="@+id/button1"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/red_button"
                     android:text="@string/one"
@@ -81,8 +81,8 @@
 
                 <Button
                     android:id="@+id/button2"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/green_button"
                     android:text="@string/two"
@@ -91,8 +91,8 @@
 
                 <Button
                     android:id="@+id/button3"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/blue_button"
                     android:text="@string/three"
@@ -100,12 +100,12 @@
                     android:textStyle="bold" />
             </TableRow>
 
-            <TableRow android:padding="2dp" >
+            <TableRow android:padding="1dp" >
 
                 <Button
                     android:id="@+id/button4"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/gray_button"
                     android:text="@string/four"
@@ -114,8 +114,8 @@
 
                 <Button
                     android:id="@+id/button5"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/purple_button"
                     android:text="@string/five"
@@ -124,8 +124,8 @@
 
                 <Button
                     android:id="@+id/button6"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/orange_button"
                     android:text="@string/six"
@@ -133,12 +133,12 @@
                     android:textStyle="bold" />
             </TableRow>
 
-            <TableRow android:padding="2dp" >
+            <TableRow android:padding="1dp" >
 
                 <Button
                     android:id="@+id/button7"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/yellow_button"
                     android:text="@string/seven"
@@ -147,8 +147,8 @@
 
                 <Button
                     android:id="@+id/button8"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/ltblue_button"
                     android:text="@string/eight"
@@ -157,8 +157,8 @@
 
                 <Button
                     android:id="@+id/button9"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_margin="2dp"
                     android:background="@drawable/pink_button"
                     android:text="@string/nine"
@@ -177,21 +177,22 @@
             android:stretchColumns="*"
             android:visibility="gone" >
 
-            <TableRow android:padding="8dp" >
+            <TableRow android:padding="1dp" >
 
                 <TextView
                     android:text="@string/smsNum"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow android:padding="8dp" >
+            <TableRow android:padding="1dp" >
 
                 <EditText
                     android:id="@+id/smsEntry"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginStart="2dp"
                     android:hint="@string/smsblurb"
-                    android:inputType="phone" />
+                    android:inputType="phone"
+                    android:textSize="12sp" />
             </TableRow>
         </TableLayout>
 
@@ -205,27 +206,28 @@
             android:stretchColumns="*"
             android:visibility="gone" >
 
-            <TableRow android:padding="8dp" >
+            <TableRow android:padding="1dp" >
 
                 <TextView
                     android:text="@string/emailAddr"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow android:padding="8dp" >
+            <TableRow android:padding="1dp" >
 
                 <EditText
                     android:id="@+id/emailEntry"
                     android:hint="@string/emailblurb"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow android:padding="8dp" >
+            <TableRow android:padding="1dp" >
 
                 <Button
                     android:id="@+id/emailBtn"
                     android:layout_weight="2"
-                    android:hint="@string/emailTest" />
+                    android:hint="@string/emailTest"
+                    android:textSize="12sp" />
             </TableRow>
         </TableLayout>
 
@@ -237,17 +239,19 @@
 
             <TableRow
                 android:layout_gravity="bottom"
-                android:padding="8dp" >
+                android:padding="1dp" >
 
                 <Button
                     android:id="@+id/saveBtn"
                     android:layout_weight="1"
-                    android:text="@string/save" />
+                    android:text="@string/save"
+                    android:textSize="12sp" />
 
                 <Button
                     android:id="@+id/cancelBtn"
                     android:layout_weight="1"
-                    android:text="@string/cancel" />
+                    android:text="@string/cancel"
+                    android:textSize="12sp" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

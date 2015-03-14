@@ -15,9 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -33,7 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TableRow;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,11 +53,11 @@ public class PrefsActivity extends Activity {
 
 	private LinearLayout entryView;
 	
-	private TableRow smsRow;
+	private TableLayout smsSection;
 	
 	private EditText smsNumberEntryBox;
 	
-	private TableRow emailRow;
+	private TableLayout emailSection;
 	
 	private EditText emailEntryBox;
 
@@ -102,9 +100,9 @@ public class PrefsActivity extends Activity {
 		// get the views
 		mainView = (LinearLayout) findViewById(R.id.main_interface);
 		entryView = (LinearLayout) findViewById(R.id.sub_interface);
-		smsRow = (TableRow) findViewById(R.id.smsRow);
+		smsSection = (TableLayout) findViewById(R.id.smsSection);
 		smsNumberEntryBox = (EditText) findViewById(R.id.smsEntry);
-		emailRow = (TableRow) findViewById(R.id.emailRow);
+		emailSection = (TableLayout) findViewById(R.id.emailSection);
 		emailEntryBox = (EditText) findViewById(R.id.emailEntry);
 		// get the listing
 		final ListView listview = (ListView) findViewById(R.id.listView1);
@@ -122,14 +120,14 @@ public class PrefsActivity extends Activity {
 				entryView.setVisibility(View.VISIBLE);
 				// if emergency sms show the txt box
 				if (currentSelectedId.get() == R.string.opt_send_emergency_sms) {
-					smsRow.setVisibility(View.VISIBLE);
+					smsSection.setVisibility(View.VISIBLE);
 				} else {
-					smsRow.setVisibility(View.GONE);
+					smsSection.setVisibility(View.GONE);
 				}
 				if (currentSelectedId.get() == R.string.opt_send_new_code) {
-					emailRow.setVisibility(View.VISIBLE);
+					emailSection.setVisibility(View.VISIBLE);
 				} else {
-					emailRow.setVisibility(View.GONE);
+					emailSection.setVisibility(View.GONE);
 				}
 			}
 
@@ -255,9 +253,18 @@ public class PrefsActivity extends Activity {
 				}
 				// hide the keypad
 				entryView.setVisibility(View.GONE);
-				smsRow.setVisibility(View.GONE);
-				emailRow.setVisibility(View.GONE);
+				smsSection.setVisibility(View.GONE);
+				emailSection.setVisibility(View.GONE);
 				mainView.setVisibility(View.VISIBLE);
+			}
+
+		});
+		((Button) findViewById(R.id.emailBtn)).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				if (DEBUG_MODE) Log.v(TAG, "Test email");
+				new MailerTask().execute(emailEntryBox.getText().toString(), getString(R.string.emailTestText));
 			}
 
 		});
@@ -404,6 +411,24 @@ public class PrefsActivity extends Activity {
 	        return "ListItem [id=" + id + ", title=" + title + ", desc=" + desc + "]";
         }
 		
+	}
+	
+	private class MailerTask extends AsyncTask<String, Void, Boolean> {
+
+	    protected Boolean doInBackground(String... args) {
+			// send the code
+			try {
+		        SMTPMailer.send(args[0], args[1]);
+		        return Boolean.TRUE;
+	        } catch (Exception e) {
+	        	if (DEBUG_MODE) Log.w(TAG, "Exception sending test email", e);
+	        }
+			return Boolean.FALSE;
+	    }
+
+	    protected void onPostExecute(Boolean status) {
+	    }
+	    
 	}
 	
 }

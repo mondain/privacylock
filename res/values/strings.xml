@@ -41,7 +41,9 @@
     <string name="opt_send_new_code">Send New Code</string>
     <string name="opt_desc_send_new_code">Generates a new device unlock code and emails it to you or the email address specified herein</string>
     <string name="emailblurb">Enter destination email</string>    
-    <string name="emailAddr">Email Address</string>    
+    <string name="emailAddr">Email Address</string>
+    <string name="emailTest">Send Test Email</string>
+    <string name="emailTestText">This is a test email</string>    
     
     <string name="opt_wipe">Wipe Device</string>
     <string name="opt_desc_wipe">Be very careful with this option! A device wipe removes all your content and resets the phone back to its original state</string>

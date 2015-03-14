@@ -3,7 +3,6 @@ package org.gregoire;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -17,17 +16,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.PixelFormat;
 import android.location.Location;
@@ -37,10 +30,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Patterns;
@@ -642,20 +633,28 @@ public class MainActivity extends Activity {
 		i.addCategory("android.intent.category.HOME");
 		List<ResolveInfo> lst = pm.queryIntentActivities(i, 0);
 		if (lst != null) {
+			int h = 0;
+			Intent home = null;
 			for (ResolveInfo resolveInfo : lst) {
 				try {
 					String packageName = resolveInfo.activityInfo.packageName;
 					if (DEBUG_MODE) Log.v(TAG, "Package: " + packageName + " name: " + resolveInfo.activityInfo.name);
 					if (!"org.gregoire".equals(packageName)) {
-						Intent home = new Intent("android.intent.action.MAIN");
+						home = new Intent("android.intent.action.MAIN");
 						home.addCategory("android.intent.category.HOME");
 						home.setClassName(packageName, resolveInfo.activityInfo.name);
-						startActivity(home);
-						break;
+						h++;
+						if (h >= 2) {
+							// we want the second launcher as that seems best when devices have more than one installed
+							break;
+						}
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
+			}
+			if (home != null) {
+				startActivity(home);
 			}
 		}
 	}
