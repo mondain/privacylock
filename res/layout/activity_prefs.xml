@@ -240,14 +240,14 @@
                 android:padding="8dp" >
 
                 <Button
-                    android:id="@+id/saveBtn"
-                    android:layout_weight="1"
-                    android:text="@string/save" />
-
-                <Button
                     android:id="@+id/cancelBtn"
                     android:layout_weight="1"
                     android:text="@string/cancel" />
+
+                <Button
+                    android:id="@+id/saveBtn"
+                    android:layout_weight="1"
+                    android:text="@string/save" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PrivacyLock</string>
+    <string name="app_name_conf">Ajustes PrivacyLock</string>
+    <string name="unlock">Abrir cerradura</string>
+    <string name="codeAccepted">Código aceptadas</string>
+    <string name="codeAcceptedNotification">Código aceptadas</string>
+    <string name="codeSavedNotification">Código Secuencia Guardados</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="quit">Salida</string>    
+    <string name="forgot">Código olvidado</string>
+    
+    <string name="undef">Indefinido</string>
+
+    <string name="enter_sequence">Introduzca una secuencia de teclas y haga clic en Guardar</string>    
+    
+    <string name="admin">Administración</string>
+    <string name="adminRegisterd">Registrado como administrador</string>
+    <string name="adminRegisterFailed">Error al registrado como administrador</string>
+    
+    <string name="opt_unlock">Desbloquear dispositivo</string>
+    <string name="opt_desc_unlock">Desbloquea tu dispositivo, similar a la protección del teclado estándar; Esta opción debe ser completado antes de habilitar cualquier opción adicional</string>
+    
+    <string name="opt_clear_call_log">Registros de llamadas claras</string>
+    <string name="opt_desc_clear_call_log">Elimina todas las entradas en el registro de llamadas</string>
+    
+    <string name="opt_clear_sms">Quitar mensajes SMS</string>
+    <string name="opt_desc_clear_sms">Los intentos de eliminar todos los mensajes SMS en el dispositivo; Tenga en cuenta que esto no funciona con Hangouts</string>
+    
+    <string name="opt_clear_camera_roll">Eliminar fotos y videos</string>
+    <string name="opt_desc_clear_camera_roll">Elimina todas las imágenes y vídeos en el dispositivo</string>
+    
+    <string name="opt_send_emergency_sms">Enviar SMS de emergencia</string>
+    <string name="opt_desc_send_emergency_sms">Envía un mensaje de emergencia al número definido por el usuario</string>
+    <string name="smsblurb">Ingrese el número de emergencia</string>
+    <string name="smsNum">Número de emergencia</string>    
+    <string name="emergencyTemplate">Este mensaje de emergencia se ha generado, el remitente puede estar en necesidad de asistencia</string>
+    <string name="emergencyTemplateLoc">Este mensaje de emergencia se ha generado, el remitente puede estar en necesidad de asistencia. GPS: %1$s %2$s</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">Enviar Nuevo Código</string>
+    <string name="opt_desc_send_new_code">Genera una nueva secuencia de desbloqueo del dispositivo y mensajes de correo electrónico a usted o la dirección de correo electrónico preconfigurado</string>
+    <string name="emailblurb">Ingrese correo electrónico de destino</string>    
+    <string name="emailAddr">Dirección De Correo Electrónico</string>
+    <string name="emailTest">Enviar un correo electrónico de prueba</string>
+    <string name="emailTestText">Este es un mensaje de prueba</string>    
+    
+    <string name="opt_wipe">Restablecimiento del dispositivo</string>
+    <string name="opt_desc_wipe">Tenga mucho cuidado con esta opción! Un dispositivo de limpiar elimina todo su contenido y restablece el teléfono a su estado original</string>
+    
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+</resources>

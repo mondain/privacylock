@@ -40,20 +40,50 @@
 
 package com.sun.mail.imap;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Date;
-import java.util.Vector;
 import java.util.Hashtable;
 import java.util.NoSuchElementException;
-import java.io.*;
+import java.util.Vector;
 
-import javax.mail.*;
-import javax.mail.event.*;
-import javax.mail.internet.*;
-import javax.mail.search.*;
+import javax.mail.FetchProfile;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.FolderClosedException;
+import javax.mail.FolderNotFoundException;
+import javax.mail.Message;
+import javax.mail.MessageRemovedException;
+import javax.mail.MessagingException;
+import javax.mail.Quota;
+import javax.mail.ReadOnlyFolderException;
+import javax.mail.StoreClosedException;
+import javax.mail.UIDFolder;
+import javax.mail.event.ConnectionEvent;
+import javax.mail.event.FolderEvent;
+import javax.mail.event.MessageChangedEvent;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
+import javax.mail.search.SearchException;
+import javax.mail.search.SearchTerm;
 
-import com.sun.mail.util.*;
-import com.sun.mail.iap.*;
-import com.sun.mail.imap.protocol.*;
+import com.sun.mail.iap.BadCommandException;
+import com.sun.mail.iap.CommandFailedException;
+import com.sun.mail.iap.ConnectionException;
+import com.sun.mail.iap.Literal;
+import com.sun.mail.iap.ProtocolException;
+import com.sun.mail.iap.Response;
+import com.sun.mail.iap.ResponseHandler;
+import com.sun.mail.imap.protocol.FetchResponse;
+import com.sun.mail.imap.protocol.IMAPProtocol;
+import com.sun.mail.imap.protocol.IMAPResponse;
+import com.sun.mail.imap.protocol.ListInfo;
+import com.sun.mail.imap.protocol.MailboxInfo;
+import com.sun.mail.imap.protocol.MessageSet;
+import com.sun.mail.imap.protocol.Status;
+import com.sun.mail.imap.protocol.UID;
+import com.sun.mail.util.CRLFOutputStream;
 
 /**
  * This class implements an IMAP folder. <p>
@@ -1625,7 +1655,7 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 		    if (uidTable != null) {
 			long uid = m.getUID();
 			if (uid != -1)
-			    uidTable.remove(new Long(uid));
+			    uidTable.remove(Long.valueOf(uid));
 		    }
 		} else {
 		    /* Valid message, sync its message number with 
@@ -1817,7 +1847,7 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 
 	try {
 	    synchronized(messageCacheLock) {
-		Long l = new Long(uid);
+		Long l = Long.valueOf(uid);
 
 		if (uidTable != null) {
 		    // Check in uidTable
@@ -1873,7 +1903,7 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 		    m = getMessageBySeqNumber(ua[i].seqnum);
 		    m.setUID(ua[i].uid);
 		    msgs[i] = m;
-		    uidTable.put(new Long(ua[i].uid), m);
+		    uidTable.put(Long.valueOf(ua[i].uid), m);
 		}
 	    }
 	} catch(ConnectionException cex) {
@@ -1903,7 +1933,7 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 		    Vector v = new Vector(); // to collect unavailable UIDs
 		    Long l;
 		    for (int i = 0; i < uids.length; i++) {
-			if (!uidTable.containsKey(l = new Long(uids[i])))
+			if (!uidTable.containsKey(l = Long.valueOf(uids[i])))
 			    // This UID has not been loaded yet.
 			    v.addElement(l);
 		    }
@@ -1922,14 +1952,14 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 		    for (int i = 0; i < ua.length; i++) {
 			m = getMessageBySeqNumber(ua[i].seqnum);
 			m.setUID(ua[i].uid);
-			uidTable.put(new Long(ua[i].uid), m);
+			uidTable.put(Long.valueOf(ua[i].uid), m);
 		    }
 		}
 
 		// Return array of size = uids.length
 		Message[] msgs = new Message[uids.length];
 		for (int i = 0; i < uids.length; i++)
-		    msgs[i] = (Message)uidTable.get(new Long(uids[i]));
+		    msgs[i] = (Message)uidTable.get(Long.valueOf(uids[i]));
 		return msgs;
 	    }
 	} catch(ConnectionException cex) {
@@ -1969,7 +1999,7 @@ public class IMAPFolder extends Folder implements UIDFolder, ResponseHandler {
 		    // insert this message into uidTable
 		    if (uidTable == null)
 			uidTable = new Hashtable();
-		    uidTable.put(new Long(uid), m);
+		    uidTable.put(Long.valueOf(uid), m);
 		}
 	    } catch (ConnectionException cex) {
 		throw new FolderClosedException(this, cex.getMessage());

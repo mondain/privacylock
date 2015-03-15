@@ -134,7 +134,7 @@ public class Argument {
      * @param i number
      */
     public void writeNumber(int i) {
-	items.addElement(new Integer(i));
+	items.addElement(Integer.valueOf(i));
     }
 
     /**
@@ -142,7 +142,7 @@ public class Argument {
      * @param i number
      */
     public void writeNumber(long i) {
-	items.addElement(new Long(i));
+	items.addElement(Long.valueOf(i));
     }
 
     /**

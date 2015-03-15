@@ -6,12 +6,13 @@
     <string name="codeAccepted">Code Accepted</string>
     <string name="codeAcceptedNotification">Code Accepted</string>
     <string name="codeSavedNotification">Code Sequence Saved</string>
-    <string name="conf">Configuration</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="quit">Quit</string>    
     <string name="forgot">Forgot My Code</string>
     
+    <string name="undef">Undefined</string>
+
     <string name="enter_sequence">Enter a key sequence and click save</string>    
     
     <string name="admin">Administration</string>

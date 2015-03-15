@@ -257,7 +257,7 @@ public class MainActivity extends Activity {
     								unlock.setVisibility(View.VISIBLE);
     								forgot.setVisibility(View.GONE);
     							}
-    						}, (2 * 60000));
+    						}, 60000L);
 							break;
 						case R.string.opt_wipe:
 							doWipe(view);
@@ -521,16 +521,12 @@ public class MainActivity extends Activity {
 		byte[] code = new byte[4];
 		Random rnd = new Random();
 		int x = rnd.nextInt(8), y = rnd.nextInt(8), f = rnd.nextInt(8), b = rnd.nextInt(8);
+		String sequence = Arrays.toString(new int[]{x + 1, y + 1, f + 1, b + 1});
 		code[0] = CODEX[x];
 		code[1] = CODEX[y];
 		code[2] = CODEX[f];
 		code[3] = CODEX[b];
-		String sequence = Arrays.toString(new int[]{x, y, f, b});
 		if (DEBUG_MODE) Log.v(TAG, "Generated code: " + sequence + " = " + Arrays.toString(code));
-		// save the code
-		if (PrefsActivity.savePref(context, String.format("%d", R.string.opt_send_new_code), code)) {
-			if (DEBUG_MODE) Log.v(TAG, "Pref for " + R.string.opt_send_new_code + " saved");
-		}
 		// look for saved email address
 		String email = null;
 		if (PrefsActivity.loadPref(context, 666) != null) {
@@ -553,7 +549,7 @@ public class MainActivity extends Activity {
     		}
 		}
 		// send the code
-		new MailerTask().execute(email, sequence);
+        new MailerTask().execute(email, sequence, code);
 	}	
 	
 	/**
@@ -659,12 +655,17 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	private class MailerTask extends AsyncTask<String, Void, Boolean> {
+	private class MailerTask extends AsyncTask<Object, Void, Boolean> {
 
-	    protected Boolean doInBackground(String... args) {
-			// send the code
+		byte[] code;
+		
+	    protected Boolean doInBackground(Object... args) {
 			try {
-		        SMTPMailer.send(args[0], args[1]);
+				// get the code bytes
+				code = (byte[]) args[2];
+				if (DEBUG_MODE) Log.v(TAG, "Sending sequence: " + Arrays.toString(code));
+				// send the code
+		        SMTPMailer.send(args[0].toString(), args[1].toString());
 		        return Boolean.TRUE;
 	        } catch (Exception e) {
 	        	if (DEBUG_MODE) Log.w(TAG, "Exception sending unlock code", e);
@@ -673,6 +674,16 @@ public class MainActivity extends Activity {
 	    }
 
 	    protected void onPostExecute(Boolean status) {
+	    	if (status) {
+	    		// get the app context
+	    		final Context context = getApplicationContext();
+	    		// save the code
+	    		if (PrefsActivity.savePref(context, String.format("%d", R.string.opt_unlock), code)) {
+	    			if (DEBUG_MODE) Log.v(TAG, "New unlock sequence saved");
+	    		}	    		
+	    	} else {
+	        	if (DEBUG_MODE) Log.w(TAG, "Email send failed, new code not saved");	    		
+	    	}
 	    }
 	    
 	}

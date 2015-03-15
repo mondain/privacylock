@@ -320,7 +320,7 @@ public class POP3Folder extends Folder {
 	Constructor cons = ((POP3Store)store).messageConstructor;
 	if (cons != null) {
 	    try {
-		Object[] o = { this, new Integer(msgno) };
+		Object[] o = { this, Integer.valueOf(msgno) };
 		m = (POP3Message)cons.newInstance(o);
 	    } catch (Exception ex) {
 		// ignore

@@ -242,15 +242,15 @@
                 android:padding="1dp" >
 
                 <Button
-                    android:id="@+id/saveBtn"
-                    android:layout_weight="1"
-                    android:text="@string/save"
-                    android:textSize="12sp" />
-
-                <Button
                     android:id="@+id/cancelBtn"
                     android:layout_weight="1"
                     android:text="@string/cancel"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/saveBtn"
+                    android:layout_weight="1"
+                    android:text="@string/save"
                     android:textSize="12sp" />
             </TableRow>
         </TableLayout>

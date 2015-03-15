@@ -24,7 +24,7 @@ public class SMTPMailer {
         props.put("mail.smtps.auth", "true");
 
         Session mailSession = Session.getDefaultInstance(props);
-        mailSession.setDebug(true);
+        //mailSession.setDebug(true);
         Transport transport = mailSession.getTransport();
 
         MimeMessage message = new MimeMessage(mailSession);

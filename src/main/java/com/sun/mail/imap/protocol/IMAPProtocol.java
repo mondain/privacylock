@@ -1532,7 +1532,7 @@ public class IMAPProtocol extends Protocol {
 		// There *will* be one SEARCH response.
 		if (ir.keyEquals("SEARCH")) {
 		    while ((num = ir.readNumber()) != -1)
-			v.addElement(new Integer(num));
+			v.addElement(Integer.valueOf(num));
 		    r[i] = null;
 		}
 	    }

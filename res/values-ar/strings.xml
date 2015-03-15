@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PrivacyLock</string>
+    <string name="app_name_conf">PrivacyLock الإعدادات</string>
+    <string name="unlock">فتح</string>
+    <string name="codeAccepted">كود مقبول</string>
+    <string name="codeAcceptedNotification">كود مقبول</string>
+    <string name="codeSavedNotification">كود تسلسل المحفوظة</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="quit">خروج</string>    
+    <string name="forgot">نسيت قانون بلدي</string>
+    
+    <string name="undef">غير محدد</string>
+
+    <string name="enter_sequence">أدخل تسلسل المفاتيح وانقر على حفظ</string>    
+    
+    <string name="admin">إدارة</string>
+    <string name="adminRegisterd">مسجل باسم الادارية</string>
+    <string name="adminRegisterFailed">فشل مسجل باسم الادارية</string>
+    
+    <string name="opt_unlock">فتح جهاز</string>
+    <string name="opt_desc_unlock">يفتح جهازك، على غرار حارس المفاتيح القياسية. يجب أن تكتمل هذا الخيار قبل تمكين أية خيارات إضافية</string>
+    
+    <string name="opt_clear_call_log">سجلات المكالمات واضحة</string>
+    <string name="opt_desc_clear_call_log">حذف كافة الإدخالات في سجل المكالمات</string>
+    
+    <string name="opt_clear_sms">رسائل SMS واضحة</string>
+    <string name="opt_desc_clear_sms">محاولات لحذف كل الرسائل SMS على الجهاز. كن على علم بأن هذا لا يعمل مع خروجات</string>
+    
+    <string name="opt_clear_camera_roll">حذف الصور ومقاطع الفيديو</string>
+    <string name="opt_desc_clear_camera_roll">حذف كل الصور وأشرطة الفيديو على الجهاز</string>
+    
+    <string name="opt_send_emergency_sms">إرسال SMS الطوارئ</string>
+    <string name="opt_desc_send_emergency_sms">المحاولات لإرسال رسالة طارئة لعدد محدد من قبل المستخدم</string>
+    <string name="smsblurb">أدخل رقم الطوارئ</string>
+    <string name="smsNum">رقم الطوارئ</string>    
+    <string name="emergencyTemplate">هذه الرسالة الطوارئ قد ولدت، قد يكون المرسل في حاجة إلى المساعدة</string>
+    <string name="emergencyTemplateLoc">هذه الرسالة الطوارئ قد ولدت، قد يكون المرسل في حاجة إلى المساعدة GPS: %1$s %2$s</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">إرسال القانون الجديد</string>
+    <string name="opt_desc_send_new_code">يولد جهاز جديد تسلسل فتح ورسائل البريد الإلكتروني إليك أو عنوان البريد الإلكتروني مسبقا</string>
+    <string name="emailblurb">أدخل البريد الإلكتروني وجهة</string>    
+    <string name="emailAddr">عنوان البريد الإلكتروني</string>
+    <string name="emailTest">إرسال اختبار البريد الإلكتروني</string>
+    <string name="emailTestText">هذا هو الاختبار البريد الإلكتروني</string>    
+    
+    <string name="opt_wipe">جهاز إعادة تعيين</string>
+    <string name="opt_desc_wipe">كن حذرا جدا مع هذا الخيار! جهاز مسح يزيل كل المحتوى الخاص بك وإعادة تعيين الهاتف مرة أخرى إلى حالته الأصلية</string>
+    
+    <string name="one">١</string>
+    <string name="two">٢</string>
+    <string name="three">٣</string>
+    <string name="four">٤</string>
+    <string name="five">٥</string>
+    <string name="six">٦</string>
+    <string name="seven">٧</string>
+    <string name="eight">٨</string>
+    <string name="nine">٩</string>
+</resources>

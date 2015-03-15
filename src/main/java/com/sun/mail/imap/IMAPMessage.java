@@ -1101,7 +1101,7 @@ public class IMAPMessage extends MimeMessage {
 			// add entry into uid table
 			if (folder.uidTable == null)
 			    folder.uidTable = new Hashtable();
-			folder.uidTable.put(new Long(u.uid), msg);
+			folder.uidTable.put(Long.valueOf(u.uid), msg);
 		    }
 
 		    // Check for header items

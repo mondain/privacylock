@@ -9,15 +9,16 @@
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Undefined"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="@string/undef"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/textTitle"
-        android:text="Undefined"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:text="@string/undef"
+        android:textSize="20sp" />
 
 </RelativeLayout>

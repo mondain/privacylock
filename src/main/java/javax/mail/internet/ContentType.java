@@ -40,9 +40,6 @@
 
 package javax.mail.internet;
 
-import javax.mail.*;
-import java.util.*;
-import java.io.*;
 
 /**
  * This class represents a MIME ContentType value. It provides
