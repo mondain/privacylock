@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PrivacyLock</string>
+    <string name="app_name_conf">PrivacyLock 設定</string>
+    <string name="unlock">UNLOCK</string>
+    <string name="codeAccepted">コード承認</string>
+    <string name="codeAcceptedNotification">コード承認</string>
+    <string name="codeSavedNotification">コードシーケンス保存</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="quit">やめる</string>    
+    <string name="forgot">私は私のコードを忘れた</string>
+    
+    <string name="undef">定義されていない</string>
+
+    <string name="enter_sequence">キーシーケンスを入力し、[保存]をクリックします</string>    
+    
+    <string name="admin">管理</string>
+    <string name="adminRegisterd">管理者として登録</string>
+    <string name="adminRegisterFailed">管理者としての登録に失敗しました</string>
+    
+    <string name="opt_unlock">デバイスのロックを解除</string>
+    <string name="opt_desc_unlock">標準のキーガードに似てお使いのデバイスは、ロックを解除し、このオプションは、前に追加オプションを有効に完了しなければならない</string>
+    
+    <string name="opt_clear_call_log">クリアコールログ</string>
+    <string name="opt_desc_clear_call_log">すべてのコールログエントリを削除します</string>
+    
+    <string name="opt_clear_sms">クリアSMSメッセージ</string>
+    <string name="opt_desc_clear_sms">デバイス上のすべてのSMSメッセージを削除しようとします。このハングアウトでは動作しないことに注意してください</string>
+    
+    <string name="opt_clear_camera_roll">クリアカメラロール</string>
+    <string name="opt_desc_clear_camera_roll">デバイス上のすべての画像と動画を削除します。</string>
+    
+    <string name="opt_send_emergency_sms">緊急SMSを送信</string>
+    <string name="opt_desc_send_emergency_sms">ここに指定された番号に緊急メッセージを送信しようとします</string>
+    <string name="smsblurb">緊急連絡先の電話番号を入力してください</string>
+    <string name="smsNum">緊急電話番号</string>    
+    <string name="emergencyTemplate">この緊急メッセージが生成されたが、送信者が援助を必要とし得る</string>
+    <string name="emergencyTemplateLoc">この緊急メッセージは、GPSの位置で生成されました： %1$s の %2$s に、送信者は支援を必要とすることができる</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">新しいコードを送る</string>
+    <string name="opt_desc_send_new_code">ここに指定された新しいデバイスロック解除コードとあなたに電子メールをまたは電子メールアドレスを生成します</string>
+    <string name="emailblurb">送信先のメールアドレスを入力</string>    
+    <string name="emailAddr">電子メールアドレス</string>
+    <string name="emailTest">テスト電子メールを送信</string>
+    <string name="emailTestText">これはテストメールです</string>    
+    
+    <string name="opt_wipe">デバイスのワイプ</string>
+    <string name="opt_desc_wipe">このオプションを使用して、非常に注意してください！デバイスのワイプはすべてのコンテンツを削除し、元の状態に戻って電話をリセットします</string>
+    
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+</resources>
