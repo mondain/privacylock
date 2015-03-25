@@ -48,6 +48,28 @@
     
     <string name="opt_wipe">デバイスのワイプ</string>
     <string name="opt_desc_wipe">このオプションを使用して、非常に注意してください！デバイスのワイプはすべてのコンテンツを削除し、元の状態に戻って電話をリセットします</string>
+        
+    <string name="opt_audio_record">オーディオの録音</string>
+    <string name="opt_desc_audio_record">オーディオ録音を開始します</string>
+    
+    <string name="opt_video_record">動画で</string>
+    <string name="opt_desc_video_record">ビデオ録画を開始します</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">コンフィギュレーション</string>
+    <string name="opt_desc_configuration">その他の設定</string>
+    <string name="configSavedNotification">設定が保存された</string>
+    
+    <string name="conf_trusted_place">信頼できる場所</string>
+    <string name="conf_desc_trusted_place">オートロックを解除するには、デバイスの安全な環境</string>
+    <string name="conf_trusted_place_toggle">自動ロック解除を有効にする</string>
+    <string name="conf_trusted_place_modify">信頼できる場所</string>
+    <string name="add">加える</string>        
+    <string name="remove">削除する</string>    
+    
+    <string name="conf_recording">記録</string>
+    <string name="conf_desc_recording">時間の長さは記録して、オーディオやビデオ</string>
+    <string name="conf_record_period">議事録は記録する</string>   
     
     <string name="one">1</string>
     <string name="two">2</string>

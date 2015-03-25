@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.gregoire.util.PrefsUtil;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -19,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,8 +44,6 @@ public class PrefsActivity extends Activity {
 	private static String TAG = "PrefsActivity";
 
 	private static boolean DEBUG_MODE;
-
-	private static final String PREF_EMPTY_STRING = "";
 
 	private static final int ADMIN_INTENT = 15;
 
@@ -97,6 +99,12 @@ public class PrefsActivity extends Activity {
 		list.add(new ListItem(R.string.opt_send_emergency_sms, getString(R.string.opt_send_emergency_sms), getString(R.string.opt_desc_send_emergency_sms)));
 		list.add(new ListItem(R.string.opt_send_new_code, getString(R.string.opt_send_new_code), getString(R.string.opt_desc_send_new_code)));
 		list.add(new ListItem(R.string.opt_wipe, getString(R.string.opt_wipe), getString(R.string.opt_desc_wipe)));
+		// audio and video recording
+		list.add(new ListItem(R.string.opt_audio_record, getString(R.string.opt_audio_record), getString(R.string.opt_desc_audio_record)));
+		list.add(new ListItem(R.string.opt_video_record, getString(R.string.opt_video_record), getString(R.string.opt_desc_video_record)));
+		// configuration link
+		list.add(new ListItem(R.string.opt_configuration, getString(R.string.opt_configuration), getString(R.string.opt_desc_configuration)));
+		
 		// get the views
 		mainView = (LinearLayout) findViewById(R.id.main_interface);
 		entryView = (LinearLayout) findViewById(R.id.sub_interface);
@@ -116,40 +124,45 @@ public class PrefsActivity extends Activity {
 					Log.v(TAG, "Selected: " + item);
 				// get the integer id
 				currentSelectedId.set(item.id);
-				// show the entry view (keypad or sms value)
-				mainView.setVisibility(View.GONE);
-				entryView.setVisibility(View.VISIBLE);
-				// if emergency sms show the txt box
-				if (currentSelectedId.get() == R.string.opt_send_emergency_sms) {
-					smsSection.setVisibility(View.VISIBLE);
-					// look for current value
-					String sms = null;
-                    try {
-                    	sms = new String(PrefsActivity.loadPref(PrefsActivity.this, 999), "UTF8");
-                    } catch (Exception e) {
-                    }
-					if (sms != null) {
-						smsNumberEntryBox.setText(sms);
-					}
+				// go to the configuration activity
+				if (currentSelectedId.get() == R.string.opt_configuration) {
+					Intent intent = new Intent(PrefsActivity.this, ConfActivity.class);
+				    startActivity(intent);
 				} else {
-					smsSection.setVisibility(View.GONE);
-				}
-				if (currentSelectedId.get() == R.string.opt_send_new_code) {
-					emailSection.setVisibility(View.VISIBLE);
-					// look for current value
-					String email = null;
-                    try {
-	                    email = new String(PrefsActivity.loadPref(PrefsActivity.this, 666), "UTF8");
-                    } catch (Exception e) {
-                    }
-					if (email != null) {
-						emailEntryBox.setText(email);
-					}
-				} else {
-					emailSection.setVisibility(View.GONE);
+    				// show the entry view (keypad or sms value)
+    				mainView.setVisibility(View.GONE);
+    				entryView.setVisibility(View.VISIBLE);
+    				// if emergency sms show the txt box
+    				if (currentSelectedId.get() == R.string.opt_send_emergency_sms) {
+    					smsSection.setVisibility(View.VISIBLE);
+    					// look for current value
+    					String sms = null;
+                        try {
+                        	sms = new String(PrefsUtil.loadPref(PrefsActivity.this, Constants.KEY_SMS_NUMBER), "UTF8");
+                        } catch (Exception e) {
+                        }
+    					if (!TextUtils.isEmpty(sms)) {
+    						smsNumberEntryBox.setText(sms);
+    					}
+    				} else {
+    					smsSection.setVisibility(View.GONE);
+    				}
+    				if (currentSelectedId.get() == R.string.opt_send_new_code) {
+    					emailSection.setVisibility(View.VISIBLE);
+    					// look for current value
+    					String email = null;
+                        try {
+    	                    email = new String(PrefsUtil.loadPref(PrefsActivity.this, Constants.KEY_EMAIL_ADDRESS), "UTF8");
+                        } catch (Exception e) {
+                        }
+    					if (!TextUtils.isEmpty(email)) {
+    						emailEntryBox.setText(email);
+    					}
+    				} else {
+    					emailSection.setVisibility(View.GONE);
+    				}		
 				}
 			}
-
 		});
 		// attach listeners to the buttons
 		int[] buttons = { R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9 };
@@ -216,7 +229,7 @@ public class PrefsActivity extends Activity {
 					byte[] buf = new byte[codeBuffer.limit()];
 					codeBuffer.get(buf);
 					// save the current selection
-					if (savePref(context, String.format("%d", selectedItem), buf)) {
+					if (PrefsUtil.savePref(context, selectedItem, buf)) {
 						if (DEBUG_MODE)
 							Log.v(TAG, "Pref for " + selectedItem + " saved");
 						Toast.makeText(getApplicationContext(), getString(R.string.codeSavedNotification), Toast.LENGTH_SHORT).show();
@@ -230,7 +243,7 @@ public class PrefsActivity extends Activity {
 						// if its sms emergency save the number
 						String number = smsNumberEntryBox.getText().toString();
 						try {
-							if (savePref(context, "999", number.getBytes("UTF8"))) {
+							if (PrefsUtil.savePref(context, Constants.KEY_SMS_NUMBER, number.getBytes("UTF8"))) {
 								if (DEBUG_MODE)
 									Log.v(TAG, "SMS number: " + number + " saved");
 							}
@@ -243,7 +256,7 @@ public class PrefsActivity extends Activity {
 						// if its failsafe save the email address
 						String email = emailEntryBox.getText().toString();
 						try {
-							if (savePref(context, "666", email.getBytes("UTF8"))) {
+							if (PrefsUtil.savePref(context, Constants.KEY_EMAIL_ADDRESS, email.getBytes("UTF8"))) {
 								if (DEBUG_MODE)
 									Log.v(TAG, "Email: " + email + " saved");
 							}
@@ -273,10 +286,10 @@ public class PrefsActivity extends Activity {
 						break;
 				}
 				// check for special "send new code" sequence and add it if its missing
-				if (PrefsActivity.loadPref(context, R.string.opt_send_new_code) == null) {
+				if (PrefsUtil.loadPref(context, R.string.opt_send_new_code) == null) {
 					byte[] failsafe = new byte[13];
 					Arrays.fill(failsafe, MainActivity.CODEX[8]);
-					if (savePref(context, String.format("%d", R.string.opt_send_new_code), failsafe)) {
+					if (PrefsUtil.savePref(context, R.string.opt_send_new_code, failsafe)) {
 						if (DEBUG_MODE)
 							Log.v(TAG, "Failsafe sequence saved");
 					}
@@ -330,45 +343,6 @@ public class PrefsActivity extends Activity {
 		});
 		// holder of the code
 		codeBuffer = ByteBuffer.allocate(64);
-	}
-
-	public final static boolean savePref(Context context, String key, byte[] val) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String str = Base64.encodeToString(val, Base64.NO_WRAP | Base64.NO_PADDING);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(key, str);
-		return editor.commit();
-	}
-
-	public final static byte[] loadPref(Context context, String key) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String str = prefs.getString(key, PREF_EMPTY_STRING);
-		if (DEBUG_MODE)
-			Log.v(TAG, str);
-		byte[] value = Base64.decode(str, Base64.NO_WRAP | Base64.NO_PADDING);
-		return value;
-	}
-
-	public final static byte[] loadPref(Context context, int id) {
-		String key = String.format("%d", id);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String str = prefs.getString(key, "");
-		if (DEBUG_MODE)
-			Log.v(TAG, "Preference - key: " + key + " value: " + str);
-		byte[] value = null;
-		if (!("").equals(str)) {
-			value = Base64.decode(str, Base64.NO_WRAP | Base64.NO_PADDING);
-			if (DEBUG_MODE)
-				Log.v(TAG, "" + Arrays.toString(value));
-		}
-		return value;
-	}
-
-	private boolean doRemovePref(String key) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.remove(key);
-		return editor.commit();
 	}
 
 	@SuppressWarnings("deprecation")

@@ -48,6 +48,28 @@
     
     <string name="opt_wipe">Limpar dispositivo</string>
     <string name="opt_desc_wipe">Tenha muito cuidado com esta opção! Um dispositivo de limpar remove todo o seu conteúdo e redefine o telefone de volta ao seu estado original</string>
+        
+    <string name="opt_audio_record">Gravar Audio</string>
+    <string name="opt_desc_audio_record">Inicia uma gravação de áudio</string>
+    
+    <string name="opt_video_record">Gravar vídeo</string>
+    <string name="opt_desc_video_record">Inicia uma gravação de vídeo</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">Configurações</string>
+    <string name="opt_desc_configuration">Configurações adicionais</string>
+    <string name="configSavedNotification">Configurações salvas</string>
+    
+    <string name="conf_trusted_place">Locais confiáveis</string>
+    <string name="conf_desc_trusted_place">Um ambiente seguro para o seu dispositivo de auto-unlock</string>
+    <string name="conf_trusted_place_toggle">Ativar auto-unlock</string>
+    <string name="conf_trusted_place_modify">Locais confiáveis</string>
+    <string name="add">Adicionar</string>        
+    <string name="remove">Remover</string>    
+    
+    <string name="conf_recording">Gravação</string>
+    <string name="conf_desc_recording">Período de tempo para gravar áudio ou vídeo</string>
+    <string name="conf_record_period">Minutos para gravar</string>   
     
     <string name="one">1</string>
     <string name="two">2</string>

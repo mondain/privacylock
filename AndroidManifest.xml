@@ -93,6 +93,15 @@
                 <category android:name="android.intent.category.CATEGORY_PREFERENCE" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>        
+        <activity
+            android:name=".ConfActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:parentActivityName="org.gregoire.PrefsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.gregoire.PrefsActivity" />
         </activity>
         
         <service android:name=".LockScreenService" />

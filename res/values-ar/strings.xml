@@ -48,6 +48,28 @@
     
     <string name="opt_wipe">جهاز إعادة تعيين</string>
     <string name="opt_desc_wipe">كن حذرا جدا مع هذا الخيار! جهاز مسح يزيل كل المحتوى الخاص بك وإعادة تعيين الهاتف مرة أخرى إلى حالته الأصلية</string>
+        
+    <string name="opt_audio_record">سجل الصوت</string>
+    <string name="opt_desc_audio_record">يبدأ تسجيل صوتي</string>
+    
+    <string name="opt_video_record">تسجيل الفيديو</string>
+    <string name="opt_desc_video_record">يبدأ تسجيل الفيديو</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">الإعدادات</string>
+    <string name="opt_desc_configuration">إعدادات إضافية</string>
+    <string name="configSavedNotification">الإعدادات المحفوظة</string>
+    
+    <string name="conf_trusted_place">الأماكن الموثوقة</string>
+    <string name="conf_desc_trusted_place">إن وجود بيئة آمنة لجهازك لصناعة السيارات في فتح</string>
+    <string name="conf_trusted_place_toggle">تمكين صناعة السيارات في فتح</string>
+    <string name="conf_trusted_place_modify">الأماكن الموثوقة</string>
+    <string name="add">إضافة</string>        
+    <string name="remove">نزع</string>    
+    
+    <string name="conf_recording">تسجيل</string>
+    <string name="conf_desc_recording">طول الفترة الزمنية لتسجيل الصوت أو الفيديو</string>
+    <string name="conf_record_period">دقيقة لتسجيل</string>   
     
     <string name="one">١</string>
     <string name="two">٢</string>

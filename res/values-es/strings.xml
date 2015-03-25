@@ -48,6 +48,28 @@
     
     <string name="opt_wipe">Restablecimiento del dispositivo</string>
     <string name="opt_desc_wipe">Tenga mucho cuidado con esta opción! Un dispositivo de limpiar elimina todo su contenido y restablece el teléfono a su estado original</string>
+        
+    <string name="opt_audio_record">Grabar audio</string>
+    <string name="opt_desc_audio_record">Inicia una grabación de audio</string>
+    
+    <string name="opt_video_record">Grabar vídeo</string>
+    <string name="opt_desc_video_record">Inicia una grabación de vídeo</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">Ajustes</string>
+    <string name="opt_desc_configuration">Ajustes adicionales</string>
+    <string name="configSavedNotification">Ajustes guardados</string>
+    
+    <string name="conf_trusted_place">Lugares de confianza</string>
+    <string name="conf_desc_trusted_place">Un ambiente seguro para que el dispositivo automático de desbloqueo</string>
+    <string name="conf_trusted_place_toggle">Habilitar auto-unlock</string>
+    <string name="conf_trusted_place_modify">Lugares de confianza</string>
+    <string name="add">Añadir</string>        
+    <string name="remove">Quitar</string>    
+    
+    <string name="conf_recording">Grabación</string>
+    <string name="conf_desc_recording">Período de tiempo para grabar audio o vídeo</string>
+    <string name="conf_record_period">Minutos para grabar</string>   
     
     <string name="one">1</string>
     <string name="two">2</string>

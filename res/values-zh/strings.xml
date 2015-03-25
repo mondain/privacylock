@@ -48,6 +48,28 @@
     
     <string name="opt_wipe">重置設備</string>
     <string name="opt_desc_wipe">要非常小心使用此選項！一個設備擦除刪除所有內容並重置手機恢復到原來的狀態</string>
+        
+    <string name="opt_audio_record">錄音</string>
+    <string name="opt_desc_audio_record">開始音頻記錄</string>
+    
+    <string name="opt_video_record">錄製視頻</string>
+    <string name="opt_desc_video_record">啟動視頻錄製</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">設置</string>
+    <string name="opt_desc_configuration">其他設置</string>
+    <string name="configSavedNotification">保存設置</string>
+    
+    <string name="conf_trusted_place">值得信賴的地方</string>
+    <string name="conf_desc_trusted_place">為您的設備安全的環境自動解鎖</string>
+    <string name="conf_trusted_place_toggle">啟用自動解鎖</string>
+    <string name="conf_trusted_place_modify">值得信賴的地方</string>
+    <string name="add">添加</string>        
+    <string name="remove">拆除</string>    
+    
+    <string name="conf_recording">記錄</string>
+    <string name="conf_desc_recording">時間長錄製音頻或視頻</string>
+    <string name="conf_record_period">紀要記錄</string>   
     
     <string name="one">1</string>
     <string name="two">2</string>

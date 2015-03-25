@@ -101,6 +101,7 @@ public class ByteArrayDataSource implements DataSource {
 	    this.len = this.data.length;	// should be the same
 	}
         this.type = type;
+        os.close();
     }
 
     /**

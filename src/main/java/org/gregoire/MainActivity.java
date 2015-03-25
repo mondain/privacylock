@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import org.gregoire.util.PrefsUtil;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -251,10 +254,10 @@ public class MainActivity extends Activity {
 		if (DEBUG_MODE)
 			Log.d(TAG, "Code: " + new BigInteger(1, entered).toString(16));
 		// read the saved codes from previous submission
-		int[] actions = new int[] { R.string.opt_unlock, R.string.opt_clear_call_log, R.string.opt_clear_sms, R.string.opt_clear_camera_roll, R.string.opt_send_emergency_sms, R.string.opt_send_new_code, R.string.opt_wipe };
+		int[] actions = new int[] { R.string.opt_unlock, R.string.opt_clear_call_log, R.string.opt_clear_sms, R.string.opt_clear_camera_roll, R.string.opt_send_emergency_sms, R.string.opt_audio_record, R.string.opt_video_record, R.string.opt_send_new_code, R.string.opt_wipe };
 		for (int action : actions) {
 			// check the code entered against the saved codes
-			byte[] saved = PrefsActivity.loadPref(context, action);
+			byte[] saved = PrefsUtil.loadPref(context, action);
 			if (saved != null) {
 				if (Arrays.equals(entered, saved)) {
 					// code action - wipe etc?
@@ -288,6 +291,12 @@ public class MainActivity extends Activity {
 								}
 							}, 60000L);
 							break;
+						case R.string.opt_audio_record:
+							doAudioRecording();
+							break;
+						case R.string.opt_video_record:
+							doVideoRecording();
+							break;
 						case R.string.opt_wipe:
 							doWipe(view);
 							break;
@@ -316,9 +325,15 @@ public class MainActivity extends Activity {
 	private void doSSIDCheck() {
 		if (DEBUG_MODE)
 			Log.i(TAG, "Checking SSID");
-		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI)) { 
-    		// get the app context
-    		final Context context = getApplicationContext();
+		// get the app context
+		final Context context = getApplicationContext();
+		
+		// TODO ensure the "feature" is enabled
+		boolean featureEnabled = false;
+		if (PrefsUtil.loadPref(context, Constants.KEY_TRUSTED_FEATURE) != null) {
+			featureEnabled = "vrai".equals(new String(PrefsUtil.loadPref(context, Constants.KEY_TRUSTED_FEATURE)));
+		}
+		if (featureEnabled && getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI)) { 
     		// the current ssid
     		String ssid = null;
     		ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -333,12 +348,12 @@ public class MainActivity extends Activity {
 			if (DEBUG_MODE)
 				Log.v(TAG, "Current ssid: " + ssid);
     		if (ssid != null) {
-    			// look for saved sms number
+    			// look for saved ssids
     			List<String> ssidList = new ArrayList<String>(1);
-    			if (PrefsActivity.loadPref(context, 123456) != null) {
+    			if (PrefsUtil.loadPref(context, Constants.KEY_TRUSTED_PLACES) != null) {
     				String ssids = null;
     				try {
-    					ssids = new String(PrefsActivity.loadPref(context, 123456), "UTF8");
+    					ssids = new String(PrefsUtil.loadPref(context, Constants.KEY_TRUSTED_PLACES), "UTF8");
     					if (DEBUG_MODE)
     						Log.v(TAG, "Loaded ssids: " + ssids);
     				} catch (UnsupportedEncodingException e) {
@@ -375,6 +390,10 @@ public class MainActivity extends Activity {
 			if (DEBUG_MODE)
 				Log.v(TAG, "Already admin");
 		}
+		// stop recordings
+		stopAudioRecording();
+		// there seems to be no way to stop a video recording at this time
+		//stopVideoRecording();
 		// execute some code after x time has passed
 		Handler launchHandler = new Handler();
 		launchHandler.postDelayed(new Runnable() {
@@ -499,9 +518,9 @@ public class MainActivity extends Activity {
 		final Context context = getApplicationContext();
 		// look for saved sms number
 		String number = null;
-		if (PrefsActivity.loadPref(context, 999) != null) {
+		if (PrefsUtil.loadPref(context, Constants.KEY_SMS_NUMBER) != null) {
 			try {
-				number = new String(PrefsActivity.loadPref(context, 999), "UTF8");
+				number = new String(PrefsUtil.loadPref(context, Constants.KEY_SMS_NUMBER), "UTF8");
 				if (DEBUG_MODE)
 					Log.v(TAG, "Loaded sms number: " + number);
 			} catch (UnsupportedEncodingException e) {
@@ -617,9 +636,9 @@ public class MainActivity extends Activity {
 			Log.v(TAG, "Generated code: " + sequence + " = " + Arrays.toString(code));
 		// look for saved email address
 		String email = null;
-		if (PrefsActivity.loadPref(context, 666) != null) {
+		if (PrefsUtil.loadPref(context, Constants.KEY_EMAIL_ADDRESS) != null) {
 			try {
-				email = new String(PrefsActivity.loadPref(context, 666), "UTF8");
+				email = new String(PrefsUtil.loadPref(context, Constants.KEY_EMAIL_ADDRESS), "UTF8");
 				if (DEBUG_MODE)
 					Log.v(TAG, "Loaded email address: " + email);
 			} catch (UnsupportedEncodingException e) {
@@ -656,11 +675,19 @@ public class MainActivity extends Activity {
 	/**
 	 * Start an audio recording.
 	 */
+	@SuppressLint("DefaultLocale")
 	private void doAudioRecording() {
 		if (DEBUG_MODE)
 			Log.v(TAG, "doAudioRecording");
 		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE)) {
-			String fileName = String.format("%s/audiorecording-%d.3gp", Environment.getExternalStorageDirectory().getAbsolutePath(), System.currentTimeMillis());
+			int recordTime = 15;
+			// get the app context
+			final Context context = getApplicationContext();
+			if (PrefsUtil.loadPref(context, Constants.KEY_RECORD_TIME) != null) {
+				recordTime = Integer.valueOf(new String(PrefsUtil.loadPref(context, Constants.KEY_RECORD_TIME)));
+			}			
+			//String fileName = String.format("%s/audiorecording-%d.3gp", Environment.getExternalStorageDirectory().getAbsolutePath(), System.currentTimeMillis());
+			String fileName = String.format("%s/audiorecording-%d.3gp", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath(), System.currentTimeMillis());			
 			// Create the recorder
 			mediaRecorder = new MediaRecorder();
 			// Set the audio format and encoder
@@ -680,7 +707,7 @@ public class MainActivity extends Activity {
 						// stop recording
 						stopAudioRecording();
 					}
-				}, 900000L);
+				}, (recordTime * 60) * 1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -692,6 +719,7 @@ public class MainActivity extends Activity {
 	private void stopAudioRecording() {
 		// Stop the recording of the audio
 		if (mediaRecorder != null) {
+			Log.v(TAG, "AudioRecording stop");
 			mediaRecorder.stop();
 			mediaRecorder.reset();
 			mediaRecorder.release();
@@ -705,12 +733,19 @@ public class MainActivity extends Activity {
 		if (DEBUG_MODE)
 			Log.v(TAG, "doVideoRecording");
 		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+			int recordTime = 15;
+			// get the app context
+			final Context context = getApplicationContext();
+			if (PrefsUtil.loadPref(context, Constants.KEY_RECORD_TIME) != null) {
+				recordTime = Integer.valueOf(new String(PrefsUtil.loadPref(context, Constants.KEY_RECORD_TIME)));
+			}			
 			Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-			File mediaFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), String.format("videorecording-%d.mp4", System.currentTimeMillis()));
+			//File mediaFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), String.format("videorecording-%d.mp4", System.currentTimeMillis()));
+			File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath(), String.format("videorecording-%d.mp4", System.currentTimeMillis()));
 			Uri videoUri = Uri.fromFile(mediaFile);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 			// record for x minutes
-			intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 15 * 60);
+			intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, recordTime * 60);
 			startActivityForResult(intent, VIDEO_CAPTURE);
 		} else {
 			Log.e(TAG, "No camera on device");
@@ -858,7 +893,7 @@ public class MainActivity extends Activity {
 				// get the app context
 				final Context context = getApplicationContext();
 				// save the code
-				if (PrefsActivity.savePref(context, String.format("%d", R.string.opt_unlock), code)) {
+				if (PrefsUtil.savePref(context, String.format("%d", R.string.opt_unlock), code)) {
 					if (DEBUG_MODE)
 						Log.v(TAG, "New unlock sequence saved");
 				}

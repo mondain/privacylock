@@ -49,6 +49,29 @@
     <string name="opt_wipe">Wipe Device</string>
     <string name="opt_desc_wipe">Be very careful with this option! A device wipe removes all your content and resets the phone back to its original state</string>
     
+    <string name="opt_audio_record">Record Audio</string>
+    <string name="opt_desc_audio_record">Starts an audio recording</string>
+    
+    <string name="opt_video_record">Record Video</string>
+    <string name="opt_desc_video_record">Starts a video recording</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">Settings</string>
+    <string name="opt_desc_configuration">Additional settings</string>
+    <string name="configSavedNotification">Settings saved</string>
+    
+    <string name="conf_trusted_place">Trusted Places</string>
+    <string name="conf_desc_trusted_place">A safe environment for your device to auto-unlock</string>
+    <string name="conf_trusted_place_toggle">Enable auto-unlock</string>
+    <string name="conf_trusted_place_modify">Trusted places</string>
+    <string name="add">Add</string>        
+    <string name="remove">Remove</string>    
+    
+    <string name="conf_recording">Recording</string>
+    <string name="conf_desc_recording">Length of time to record audio or video</string>
+    <string name="conf_record_period">Minutes to record</string>   
+    
+    
     <string name="one">1</string>
     <string name="two">2</string>
     <string name="three">3</string>
