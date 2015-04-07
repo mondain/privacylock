@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PrivacyLock</string>
+    <string name="app_name_conf">PrivacyLock 設置</string>
+    <string name="unlock">開鎖</string>
+    <string name="codeAccepted">代碼接受</string>
+    <string name="codeAcceptedNotification">代碼接受</string>
+    <string name="codeSavedNotification">代碼序列保存</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="quit">出口</string>    
+    <string name="forgot">忘記我的代碼</string>
+    
+    <string name="undef">未定義</string>
+
+    <string name="enter_sequence">輸入鍵序列，然後點擊保存</string>    
+    
+    <string name="admin">管理</string>
+    <string name="adminRegisterd">註冊成為管理員</string>
+    <string name="adminRegisterFailed">沒有註冊的管理員</string>
+    
+    <string name="opt_unlock">解鎖裝置</string>
+    <string name="opt_desc_unlock">解鎖您的設備，類似於標準鍵盤保護;此選項必須啟用任何額外的選項前完成</string>
+    
+    <string name="opt_clear_call_log">清晰的通話記錄</string>
+    <string name="opt_desc_clear_call_log">刪除通話記錄中的所有條目</string>
+    
+    <string name="opt_clear_sms">清除短信</string>
+    <string name="opt_desc_clear_sms">嘗試刪除設備上的所有短信;請注意，這並不與視頻群聊工作</string>
+    
+    <string name="opt_clear_camera_roll">刪除照片和錄像</string>
+    <string name="opt_desc_clear_camera_roll">刪除設備上的所有圖片和視頻</string>
+    
+    <string name="opt_send_emergency_sms">發送短信應急</string>
+    <string name="opt_desc_send_emergency_sms">發送緊急消息發送到用戶定義的數</string>
+    <string name="smsblurb">輸入緊急號碼</string>
+    <string name="smsNum">緊急電話號碼</string>    
+    <string name="emergencyTemplate">已經生成該緊急消息，發送者可能需要援助</string>
+    <string name="emergencyTemplateLoc">已經生成該緊急消息，發送者可能需要援助 GPS: %1$s %2$s</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">發送新代碼</string>
+    <string name="opt_desc_send_new_code">生成新的設備的解鎖序列，它的電子郵件給你，或預配置的電子郵件地址</string>
+    <string name="emailblurb">輸入目的地電子郵件</string>    
+    <string name="emailAddr">電子郵件地址</string>
+    <string name="emailTest">發送測試電子郵件</string>
+    <string name="emailTestText">這是一個測試郵件</string>    
+    
+    <string name="opt_wipe">重置設備</string>
+    <string name="opt_desc_wipe">要非常小心使用此選項！一個設備擦除刪除所有內容並重置手機恢復到原來的狀態</string>
+    
+    <string name="one">一</string>
+    <string name="two">二</string>
+    <string name="three">三</string>
+    <string name="four">四</string>
+    <string name="five">五</string>
+    <string name="six">六</string>
+    <string name="seven">七</string>
+    <string name="eight">八</string>
+    <string name="nine">九</string>
+</resources>

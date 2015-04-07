@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PrivacyLock</string>
+    <string name="app_name_conf">PrivacyLock Configuration</string>
+    <string name="unlock">UNLOCK</string>
+    <string name="codeAccepted">Kode Diterima</string>
+    <string name="codeAcceptedNotification">Kode Diterima</string>
+    <string name="codeSavedNotification">Kode Urutan Disimpan</string>
+    <string name="save">Simpan</string>
+    <string name="cancel">Tidak Jadi</string>
+    <string name="quit">Berhenti</string>    
+    <string name="forgot">Aku Lupa Kode saya</string>
+    
+    <string name="undef">Undefined</string>
+
+    <string name="enter_sequence">Masukkan urutan tombol dan klik save</string>    
+    
+    <string name="admin">Tata Usaha</string>
+    <string name="adminRegisterd">Terdaftar Sebagai Admin</string>
+    <string name="adminRegisterFailed">Gagal mendaftar sebagai Admin</string>
+    
+    <string name="opt_unlock">Membuka Perangkat</string>
+    <string name="opt_desc_unlock">Membuka perangkat Anda, mirip dengan pengaman tombol standar; Pilihan ini harus diselesaikan sebelum mengaktifkan pilihan tambahan</string>
+    
+    <string name="opt_clear_call_log">Jelas Log Panggilan</string>
+    <string name="opt_desc_clear_call_log">Menghapus semua entri log panggilan</string>
+    
+    <string name="opt_clear_sms">Batal Pesan SMS</string>
+    <string name="opt_desc_clear_sms">Upaya untuk menghapus semua pesan SMS pada perangkat; Sadarilah bahwa ini tidak bekerja dengan Hangouts</string>
+    
+    <string name="opt_clear_camera_roll">Jelas Rol Kamera</string>
+    <string name="opt_desc_clear_camera_roll">Menghapus semua gambar dan video pada perangkat</string>
+    
+    <string name="opt_send_emergency_sms">Kirim SMS Darurat</string>
+    <string name="opt_desc_send_emergency_sms">Attemps untuk mengirim pesan darurat ke nomor yang ditentukan di sini</string>
+    <string name="smsblurb">Masukkan nomor darurat</string>
+    <string name="smsNum">Nomor darurat</string>    
+    <string name="emergencyTemplate">Pesan darurat ini telah dihasilkan, pengirim mungkin membutuhkan bantuan</string>
+    <string name="emergencyTemplateLoc">Pesan darurat ini telah dihasilkan di lokasi GPS: %1$s %2$s, pengirim mungkin membutuhkan bantuan</string>
+    
+    <!-- Failsafe sequence is 13 of the 9 key -->
+    <string name="opt_send_new_code">Kirim Kode Baru</string>
+    <string name="opt_desc_send_new_code">Menghasilkan perangkat baru membuka kode dan email kepada Anda atau alamat email ditentukan di sini</string>
+    <string name="emailblurb">Masukkan email tujuan</string>    
+    <string name="emailAddr">Alamat Email</string>
+    <string name="emailTest">Kirim Uji Email</string>
+    <string name="emailTestText">Ini adalah tes email</string>    
+    
+    <string name="opt_wipe">Lap Perangkat</string>
+    <string name="opt_desc_wipe">Berhati-hatilah dengan pilihan ini! Perangkat menghapus menghapus semua konten Anda dan me-reset ponsel ke kondisi semula</string>
+    
+    <string name="opt_audio_record">Rekam Audio</string>
+    <string name="opt_desc_audio_record">Mulai rekaman audio</string>
+    
+    <string name="opt_video_record">Rekam Video</string>
+    <string name="opt_desc_video_record">Memulai perekaman video</string>
+    
+    <!-- Settings / configuration -->
+    <string name="opt_configuration">Konfigurasi</string>
+    <string name="opt_desc_configuration">Konfigurasi tambahan</string>
+    <string name="configSavedNotification">Konfigurasi disimpan</string>
+    
+    <string name="conf_trusted_place">Tempat terpercaya</string>
+    <string name="conf_desc_trusted_place">Sebuah lingkungan yang aman bagi perangkat Anda untuk auto-unlock</string>
+    <string name="conf_trusted_place_toggle">Aktifkan auto-unlock</string>
+    <string name="conf_trusted_place_modify">Tempat terpercaya</string>
+    <string name="add">Menambahkan</string>        
+    <string name="remove">Menghapus</string>    
+    
+    <string name="conf_recording">Rekaman</string>
+    <string name="conf_desc_recording">Lama waktu untuk merekam audio atau video</string>
+    <string name="conf_record_period">Menit untuk merekam</string>   
+    
+    
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+</resources>
